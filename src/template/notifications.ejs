@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        nav{
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+
+        }
+        .page-notif{
+            display: grid;
+            grid-template-columns: 1fr 40% 1fr;
+            margin-top: 50px;
+
+        }
+        .notif_user{
+            display: grid;
+            grid-template-columns: 65px 2fr 1fr;
+            height: fit-content;
+            padding: 5px;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            margin-top: 20px;
+            padding: 10px ;
+            background-color: #f0f2f5;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+
+        }
+        .zone-notif h1{
+            text-align: center;
+        }
+        .notif_user img{
+            height: 55px;
+            width: 55px;
+            border-radius: 50%;
+        }
+
+        .notif_user .info_action{
+            text-align: center;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .notif_user .info_action .action{
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            grid-gap: 5px;
+        }
+        .notif_user .info_action .action :first-child{
+            padding: 5px;
+            background-color: green;
+            border-radius: 5px;
+            border: none;
+        }
+        .notif_user .info_action .action :last-child{
+            padding: 5px;
+            background-color: red;
+            border-radius: 5px;
+            border: none;
+        }
+        .info_action{
+            align-self: flex-end;
+            margin-bottom: 15px;
+        }
+    </style>
+
+</head>
+<body>
+    <%- include('./partials/header') %>
+
+    <div class="page-notif">
+
+        <div>
+    
+        </div>
+        <div class="zone-notif">
+            <h1>Mes Notifications</h1>
+            <% user.Envoi.forEach(notif => { %>
+
+            <div class="notif_user">
+                <img src="../static/profil/<%= notif.User.Profil.urlPhoto %>" alt="">
+                <% if (notif.contenu == 1) {%>
+                <div>
+                    <p class="data-createdAt" data-createdAt="<%= notif.createdAt %>">                     
+                    </p>
+                    <p>Demande reçue de  <%= notif.User.prenom %> <%= notif.User.nom %></p>
+
+                </div>
+                <div class="info_action">
+                    <div class="action"data-notifId="<%= notif.id %>">
+                        <button class="accept" data-senderId="<%= notif.senderId %>" data-userId="<%= notif.userId %>">Accepter</button>
+                        <button class="decline" >Refuser</button>
+                    </div>
+                </div>
+                <% } else if(notif.contenu == 0){ %>
+                    <div>
+                        <p class="data-createdAt" data-createdAt="<%= notif.createdAt %>">                     
+                        </p>
+                        <p>Demande envoyé à  <%= notif.User.prenom %> <%= notif.User.nom %></p>
+
+                    </div>
+                    <div class="info_action">
+                        <div class="action">
+                            <button data-notifId ="<%= notif.id %>" class="annuler_demande" >Annuler </button>
+                            <button data-notifId ="<%= notif.id %>" class="supp">Supprimer</button>
+                        </div>
+                    </div>
+                    <% } %>
+            </div>
+
+            <%
+        });
+        %> 
+
+        </div>
+        <div>
+    
+        </div>
+    </div>
+    <script>
+        // Gestion du bouton pour accepter une demande d'ami
+        document.querySelectorAll('.accept').forEach(acc =>{
+            acc.addEventListener('click',async ()=>{
+                const response = await fetch('/friend',{
+                    method : 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body : JSON.stringify({friendId : acc.getAttribute('data-senderId'),userId : decode().userId})
+                })
+                const result = await response.json()
+                if(result.friend){
+
+                    const parent = acc.parentElement
+                    const parent1 = parent.parentElement
+                    parent1.parentElement.style.display = 'none'
+                    alert('Demande d\'amis accepté avec succès')
+                    const response = await fetch(`/notif/${acc.parentElement.getAttribute('data-notifId')}?all=true`,{
+                    method : 'DELETE'
+                })
+                }
+
+            })
+        })
+        // Gestion du bouton pour Refuser une demande d'amie
+        document.querySelectorAll('.decline').forEach(dec =>{
+            dec.addEventListener('click',async ()=>{
+                const response = await fetch(`/notif/${dec.parentElement.getAttribute('data-notifId')}`,{
+                    method : 'DELETE'
+                })
+                const result =await response.json()
+                console.log(result)
+                if(result.delete){
+
+                    const parent = dec.parentElement
+                    const parent1 = parent.parentElement
+                    parent1.parentElement.style.display = 'none'
+                }
+            })
+        })
+
+        document.querySelectorAll('.supp').forEach(sp =>{
+            sp.addEventListener('click',async ()=>{
+                // location.reload()
+                alert('bouton cliqué')
+                const response = await fetch(`/notif/${sp.getAttribute('data-notifId')}`,{
+                    method : 'DELETE'
+                })
+                const result =await response.json()
+                console.log(result)
+                if(result.delete){
+
+                    const parent = sp.parentElement
+                    const parent1 = parent.parentElement
+                    parent1.parentElement.style.display = 'none'
+                }
+            })
+        })
+        // Gestion de l'annulation d'une demande d'amie
+        document.querySelectorAll('.annuler_demande').forEach(element => {
+            element.addEventListener('click',async()=>{
+                const response = await fetch(`/notif/${element.getAttribute('data-notifId')}?all=true`,{
+                    method : 'DELETE'
+                })
+                const result =await response.json()
+                console.log(result)
+                if(result.delete){
+
+                    const parent = element.parentElement
+                    const parent1 = parent.parentElement
+                    parent1.parentElement.style.display = 'none'
+                }
+            })
+        });
+
+        // Gestion de l'affichage de la date de Reception et d'Envoi de chaque notification
+        const createdAtElements = document.querySelectorAll('.data-createdAt');
+        createdAtElements.forEach(element => {
+            const elementDate = element.getAttribute('data-createdAt');
+            const date = new Date(elementDate);
+            element.textContent = date.toLocaleString('fr-FR', {
+                // weekday: 'long',
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        });
+
+
+
+    </script>
+</body>
+</html>

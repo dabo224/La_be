@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        nav{
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+
+        }
+        nav .info img{
+            height: 50px;
+        }
+        nav .nav{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .men{
+            /* display: flex; */
+            /* flex-direction: column; */
+            align-items: center;
+        }
+        .men::after{
+            content: "";
+            text-align: center;
+            display: inline-block;
+            width: 0;
+            font-weight: bolder;
+            height: 3px;
+            background-color: black;
+            transition: 0.2s;
+        }
+        .men:hover::after{
+            width: 100%;
+            transition: 0.5s;
+        }
+        nav .option{
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .nav img,.option img{
+            height: 40px;
+        }
+
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="info">
+            <img src="logo-uiv.png" alt="">
+        </div>
+        <div class="nav">
+            <span class="men"><img class="seul" src="home-svgrepo-com.svg" alt=""></span>
+            <span class="men"><img src="person-team-svgrepo-com.svg" alt=""></span>
+            <span class="men"><img src="notifications-svgrepo-com.svg" alt=""></span>
+            <span class="men"><img src="lost-items-missing-svgrepo-com.svg" alt=""></span>
+            <span class="men"><img src="calendar-1195-svgrepo-com.svg" alt=""></span>
+
+        </div>
+        <div class="option">
+            <img src="person-svgrepo-com.svg" alt="">
+        </div>
+    </nav>
+</body>
+</html>

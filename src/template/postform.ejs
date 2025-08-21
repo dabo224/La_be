@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body{
+            height: 100vh;
+            display: flex;
+            place-items: center;
+            place-content: center;
+        }
+        .contenu *{
+            margin-top: 10px;
+        }
+        #signup-form{
+            border: 0.2px solid;
+            border-radius: 5px;
+            width: fit-content;
+            padding: 20px;
+        }
+        .form-group{
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+        }
+        .contenu > h2 {
+            text-align: center;
+        }
+        #bouton{
+            display: flex;
+            place-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenu">
+
+        <h2>Inscription</h2>
+        <form id="signup-form">
+            <div class="form-group">
+                <label for="titre">Titre</label>
+                <input type="text" id="titre" name = "titre" placeholder="titre du post" >
+            </div>
+            <div class="form-group">
+                <label for="contenu">Contenu du post</label>
+                <input type="contenu" id="contenu" name="contenu" placeholder="contenu du post" >
+            </div>
+            <div class="form-group">
+                <label for="userID">id de user</label>
+                <input type="userID" id="userID" name="userID" placeholder="identifiant du l'utilisateur" >
+            </div>
+            <div id="bouton" >
+
+                <button type="submit">poster</button>
+            </div>
+        </form>
+
+    </div>
+    <script>
+        form = document.getElementById('signup-form')
+        form.addEventListener('submit',async function (e) {
+            
+            e.preventDefault()
+
+            const titre = document.getElementById('titre').value
+            const contenu = document.getElementById('contenu').value
+            const userID = document.getElementById('userID').value
+            
+            try{
+
+                const response = await fetch('/post',{
+                    method : 'POST',
+                    headers:{
+                        'Content-Type': 'application/json'
+                    },
+                    body:JSON.stringify({titre,contenu,userID})
+                })
+
+                const result = await response.json()
+
+                if(response.ok){
+                    alert(result.message)
+                    
+                }
+                else{
+                    alert(result.error)
+                }
+            }
+            catch(erreur){
+                alert(erreur)
+
+            }
+        })
+    </script>
+</body>
+</html>

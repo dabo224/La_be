@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Messagerie</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; }
+        .messagerie-container {
+            display: flex;
+            height: 90vh;
+            width: 100vw;
+            margin-top: 40px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #aaa;
+            overflow: hidden;
+        }
+        .friends-list {
+            width: 300px;
+            background: #f7f7f7;
+            border-right: 1px solid #eee;
+            padding: 0;
+            overflow-y: auto;
+        }
+        .friend-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+            background: #f7f7f7;
+        }
+        .friend-item.selected, .friend-item:hover {
+            background: #e6f0ff;
+        }
+        .friend-photo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 2px solid #1877f2;
+            background: #fff;
+        }
+        .friend-name {
+            font-size: 1.1em;
+            color: #222;
+            font-weight: 500;
+        }
+        .chat-zone {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            background: #f0f2f5;
+            position: relative;
+        }
+        .chat-header {
+            background: #1877f2;
+            color: #fff;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 0 0 0 0;
+            min-height: 50px;
+        }
+        #chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+        #chat-form {
+            display: flex;
+            border-top: 1px solid #eee;
+            background: #fff;
+            padding: 10px;
+        }
+        #chat-input {
+            flex: 1;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            margin-right: 10px;
+            background: #f0f2f5;
+        }
+        #chat-form button {
+            background: #1877f2;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .msg-me { text-align: right; color: #1877f2; margin: 5px 0; }
+        .msg-other { text-align: left; color: #222; margin: 5px 0; }
+        .msg-me {
+    align-self: flex-end;
+    background: #1877f2;
+    color: #fff;
+    border-radius: 18px 18px 4px 18px;
+    padding: 10px 16px;
+    margin: 6px 0 6px auto;
+    max-width: 70%;
+    width: fit-content;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.08);
+    text-align: left;
+    word-break: break-word;
+    font-size: 1em;
+}
+
+.msg-other {
+    align-self: flex-start;
+    background: #fff;
+    color: #222;
+    border-radius: 18px 18px 18px 4px;
+    padding: 10px 16px;
+    margin: 6px auto 6px 0;
+    width: fit-content;
+    max-width: 70%;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.08);
+    text-align: left;
+    word-break: break-word;
+    font-size: 1em;
+}
+        .empty-chat {
+            color: #888;
+            text-align: center;
+            margin-top: 40px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <%- include('./partials/header') %>
+    <div class="messagerie-container">
+        <!-- Liste des amis à gauche -->
+        <div class="friends-list" id="friends-list">
+            <% if (amis && amis.length > 0) { %>
+                <% amis.forEach(friend => { %>
+                    <div class="friend-item"
+                        data-friendid="<%= friend.id %>"
+                        data-friendname="<%= friend.prenom %> <%= friend.nom %>">
+                        <img class="friend-photo" src="/static/profil/<%= friend.urlPhoto ? friend.urlPhoto : 'default.png' %>" alt="photo">
+                        <span class="friend-name"><%= friend.prenom %> <%= friend.nom %></span>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="empty-chat">Vous n'avez pas encore d'amis.</div>
+            <% } %>
+        </div>
+        <!-- Zone de chat à droite -->
+        <div class="chat-zone">
+            <div class="chat-header" id="chat-user-header">
+                Sélectionnez un ami pour démarrer la conversation
+            </div>
+            <div id="chat-messages">
+                <div class="empty-chat" id="empty-chat-msg">
+                    Sélectionnez un ami pour démarrer la conversation
+                </div>
+            </div>
+            <form id="chat-form" autocomplete="off" style="display:none;">
+                <input type="text" id="chat-input" placeholder="Votre message..." />
+                <button type="submit">Envoyer</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const myUserId = "<%= userId %>";
+        const socket = io();
+        socket.emit('join', myUserId);
+
+        let currentFriendId = null;
+        let currentFriendName = "";
+
+        // Sélection d'un ami
+        document.querySelectorAll('.friend-item').forEach(item => {
+            item.addEventListener('click', async () => {
+                // Visuel sélection
+                document.querySelectorAll('.friend-item').forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+
+                currentFriendId = item.getAttribute('data-friendid');
+                currentFriendName = item.getAttribute('data-friendname');
+                document.getElementById('chat-user-header').textContent = currentFriendName;
+                document.getElementById('chat-messages').innerHTML = "";
+                document.getElementById('chat-form').style.display = 'flex';
+
+                // Charger l'historique
+                const response = await fetch(`/api/messages/${myUserId}/${currentFriendId}`);
+                const historique = await response.json();
+                if (historique.length === 0) {
+                    document.getElementById('chat-messages').innerHTML = '<div class="empty-chat">Aucun message pour le moment.</div>';
+                } else {
+                    historique.forEach(msg => {
+                        afficherMessage(
+                            msg.from == myUserId ? "Moi" : currentFriendName,
+                            msg.message,
+                            msg.from == myUserId
+                        );
+                    });
+                }
+            });
+        });
+
+        // Ferme la conversation (optionnel, ici on ne ferme pas la zone de chat)
+
+        // Envoie un message texte
+        document.getElementById('chat-form').onsubmit = function(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message || !currentFriendId) return;
+            socket.emit('chat message', { from: myUserId, to: currentFriendId, message });
+            afficherMessage("Moi", message, true);
+            input.value = '';
+        };
+
+        // Affiche un message dans la fenêtre de chat
+        function afficherMessage(from, message, isMe) {
+            const div = document.createElement('div');
+            div.className = isMe ? 'msg-me' : 'msg-other';
+            div.textContent = message; // On affiche seulement le message, sans le nom
+            document.getElementById('chat-messages').appendChild(div);
+            document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+        }
+        // Réception d'un message
+        socket.on('chat message', (data) => {
+            // Affiche seulement si la conversation est ouverte avec ce contact
+            if (data.from === currentFriendId) {
+                afficherMessage(currentFriendName, data.message, false);
+            }
+        });
+
+        // Affichage initial
+        document.getElementById('chat-form').style.display = 'none';
+        document.getElementById('chat-user-header').textContent = "Sélectionnez un ami pour démarrer la conversation";
+        document.getElementById('chat-messages').innerHTML = '<div class="empty-chat" id="empty-chat-msg">Sélectionnez un ami pour démarrer la conversation</div>';
+    </script>
+</body>
+</html>

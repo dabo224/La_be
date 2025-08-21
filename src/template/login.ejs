@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1000px;
+        }
+        .left {
+            flex: 1;
+            padding: 20px;
+        }
+        .left h1 {
+            color: #1877f2;
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .left p {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .right {
+            flex: 1;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .right h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #165dbb;
+        }
+        .forgot-password {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .forgot-password a {
+            color: #1877f2;
+            text-decoration: none;
+        }
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .signup-link a {
+            color: #42b72a;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            background-color: black;
+            animation: blink 1s infinite;
+        }
+        #dynamic-text {
+            color: #42b72a;
+        }
+        .cursor::after {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            font-weight: bolder;
+            /* height: 15px; */
+            background-color: black;
+            animation: blink 1s infinite;
+
+        }
+        @keyframes blink {
+            0%, 50% {
+                opacity: 1;
+            }
+            50.01%, 100% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <h1><img src="/static/images/logo.png" alt=""></h1>
+            <p>L'université de Labé c'est <span id="dynamic-text"></span>&nbsp;<span class="cursor"></span></p>
+        </div>
+        <div class="right">
+            <h2>Connexion</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Adresse e-mail" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Mot de passe" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Se connecter</button>
+                </div>
+                <div class="forgot-password">
+                    <a href="#">Mot de passe oublié ?</a>
+                </div>
+                <div class="signup-link">
+                    <a href="/inscription">Créer un nouveau compte</a>
+                </div>
+            </form>
+            <p id="error"></p>
+        </div>
+    </div>
+    <script>
+        const words = ["la famille", "l'excellence", "la solidarité"];
+        const colors = ["#EA9338", "#FECB38", "#41AB55"];
+        let wordIndex = 0;
+        let charIndex = 0;
+        let currentWord = "";
+        let isDeleting = false;
+        const dynamicText = document.getElementById("dynamic-text");
+
+        function type() {
+            if (isDeleting) {
+                currentWord = words[wordIndex].substring(0, charIndex--);
+            } else {
+                currentWord = words[wordIndex].substring(0, charIndex++);
+            }
+
+            dynamicText.textContent = currentWord;
+            dynamicText.style.color = colors[wordIndex];
+
+            if (!isDeleting && charIndex > words[wordIndex].length) {
+                isDeleting = true;
+                setTimeout(type, 2000); // Pause avant de commencer à supprimer
+            } else if (isDeleting && charIndex < 0) {
+                isDeleting = false;
+                wordIndex = (wordIndex + 1) % words.length;
+                setTimeout(type, 500); // Pause avant de commencer à taper le mot suivant
+            } else {
+                setTimeout(type, isDeleting ? 50 : 100);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(type, 500);
+        });
+        document.getElementById("signup-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const email = e.target.email.value;
+            const password = e.target.password.value;
+            fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data)
+                if (data.error) {
+                    document.getElementById('error').textContent = data.error;
+                } else {
+                    alert('vous êtes connecté')
+                    console.log(data.token);
+                    try {
+                        const base64Url = data.token.split('.')[1];
+                        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                        }).join(''));
+
+                        console.log(JSON.parse(jsonPayload))
+                        } catch (e) {
+                            console.error('Invalid token', e);
+                            // return null;
+                    }
+                    window.location.href = "/home";
+                    localStorage.setItem ('token',data.token)
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+        });
+    </script>
+</body>
+</html>     

@@ -1,0 +1,155 @@
+<!-- Début du fichier HTML -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> <!-- Définir l'encodage des caractères -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Rendre la page responsive -->
+    <title>Upload Image</title> <!-- Titre de la page -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group input[type="file"] {
+            display: none;
+        }
+        .form-group label {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #1877f2;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .form-group label svg {
+            margin-right: 10px;
+        }
+        .form-group label:hover {
+            background-color: #165dbb;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #42b72a;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #36a420;
+        }
+        .preview {
+            margin-top: 20px;
+        }
+        .preview img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Choisissez une image pour votre profil</h1> <!-- Titre principal de la page -->
+        <form id="upload-form" enctype="multipart/form-data"> <!-- Formulaire pour télécharger une image -->
+            <div class="form-group">
+                <input type="file" id="image" name="image" required> <!-- Champ de téléchargement de fichier -->
+                <label for="image">
+                    <!-- Icône SVG pour le bouton de sélection de fichier -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Choisir une image
+                </label> <!-- Bouton stylisé pour choisir un fichier -->
+            </div>
+            <div class="preview" id="preview"></div> <!-- Conteneur pour afficher l'aperçu de l'image -->
+            <div class="form-group">
+                <button type="submit">Continuer</button> <!-- Bouton pour soumettre le formulaire -->
+            </div>
+        </form>
+    </div>
+    <script>
+        document.getElementById('image').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('preview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Aperçu de l'image">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('upload-form').addEventListener('submit', async function(event) {
+            const chemin = window.location.pathname;
+            event.preventDefault(); // Empêcher le rechargement de la page
+            const formData = new FormData();
+            const fileField = document.getElementById('image');
+
+            formData.append('image', fileField.files[0]);
+
+            let response;
+
+            try {
+                // alert('ok')
+                 response = await fetch(chemin, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // const result = await response.json()
+
+                // if(response.ok){
+                    // }
+                }
+                catch (error) {
+                    console.error('Erreur:', error);
+                    alert('Une erreur est survenue. Veuillez réessayer.');
+                }
+                const result = await response.json();
+                
+                if (response.ok) {
+
+                    alert(result.message)
+                    if(result.stat){
+                        window.location.href = '/home'
+                    }
+                    else{
+                        window.location.href = '/login'
+                    }
+                }
+        })
+    </script>
+</body>
+</html>
+<!-- Fin du fichier HTML -->

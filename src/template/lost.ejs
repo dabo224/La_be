@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            background-color: #f0f2f5;
+
+        }
+        .lost{
+            display: grid;
+            grid-template-columns: 1fr 40% 1fr;
+        }
+        #lost,#lost img{
+            width: 100%;
+            border:solid 1px;
+        }
+        .losts{
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            /* position: relative;
+            right: 25px; */
+            box-shadow: 15px 15px 10px  rgba(0, 0, 0, 0.3);
+            min-width: 300px;
+        }
+        
+        .losts .profil {
+            display: flex;
+        }
+        .lost img{
+            width: 100%;
+        }
+        .losts .profil img{
+            width: 50px;
+            height: 50px;
+            border-radius: 100%;
+        }
+        .losts .img {
+            display: grid ;
+            grid-template-rows: 1fr 40px;
+        }
+        .img img{
+            grid-row: 1 / -1;
+            grid-column: 1 / -1;
+        }
+        .img .action{
+            grid-row: -1 / -2;
+            grid-column: 1 / -1;
+
+        }
+        .img .action{
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            /* justify-content: space-around; */
+            justify-content: space-around;
+            grid-gap: 1px;
+            background-color: #f0f2f5;
+        }
+        .img .action button{
+            background-color: blue;
+            border: none;
+            border-radius: 0 0 5px 0;
+            padding: 5px;
+
+        }
+        .img .action :first-child{
+            border-radius: 0 0 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('./partials/header') %>
+    <section class="lost">
+        <div>
+
+        </div>
+        <div class="section-lost">
+            <h1>Objet Perdus</h1>
+            <div>
+                <% objs.forEach(obj => {%>
+                    
+                    <div class="losts">
+                        <div class="profil" >
+                            <img  src="/static/profil/<%= obj.User.Profil.urlPhoto %>" alt="">
+                            <p>
+                                <%= obj.User.prenom + '' + obj.User.nom  %>
+                            </p>
+                        </div>
+                        <p>
+                            <%= obj.description %>
+                        </p>
+                        <div class="img">
+    
+                            <img src="/static/images/objet_Perdus/<%= obj.image %> ">
+                            <div class="action">
+                                <button>Contacter</button>
+                                <button>Laisser un avis</button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                <% 
+                }); 
+                 %>
+            </div>
+        </div>
+        <div>
+
+        </div>
+    </section>
+</body>
+</html>

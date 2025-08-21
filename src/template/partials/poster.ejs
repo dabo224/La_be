@@ -1,0 +1,540 @@
+<style>
+    .post-create{
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    }
+    .post-create *{
+        margin: 5px;
+    }
+    .post-create .info{
+
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    column-gap: 10px;
+    justify-content: center;
+    align-items: center;
+
+    }
+    .post-create .info p{
+    background-color: #f0f2f5;
+    padding: 5px;
+    border-radius: 10px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    }
+    .post-create .post-action{
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    }
+    .post-create .post-action div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    }
+
+
+    .overlay {
+      display: none; /* Caché par défaut */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    /* Fenêtre popup */
+    .mod {
+      background: white;
+      padding: 5px;
+      border-radius: 8px;
+      min-width: 30vw;
+      min-height: fit-content;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      overflow: scroll;
+      scrollbar-width: none;
+      display: none;
+
+    }
+
+    /* Bouton de fermeture */
+    .close-btn:hover {
+      background-color: red;
+    }
+    .signup-form {
+        display: flex;
+        flex-direction: column;
+    }
+    .signup-form textarea{
+        width: 100%;
+        min-height: 70px;
+        scrollbar-width: none;
+        border: none;
+        outline: none;
+
+    }
+    #autoInput {
+    font-size: 16px;
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    min-width: 50px;
+    max-width: 100vh;
+    width: auto;
+    max-width: 100%;
+    }
+    .mod .tete,h2{
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .mod .tete svg{
+        border-radius: 50%;
+        background-color: #f0f2f5;
+    }
+
+    .form-group label{
+        display: flex;
+        flex-direction: column;
+        min-height: 23vh;
+        background-color: #f0f2f5;
+        color: black;
+    }
+    .modal-info-user{
+        align-self: flex-start;
+        display:flex;
+        align-items: flex-start;
+    }
+    .modal-info-user p{
+        margin: 0 10px;
+        /* position: absolute; */
+        position: relative;
+        align-self: center;
+        height: fit-content;
+    }
+    #bouton button{
+        width: 100%;
+        font-size: 15px;
+        padding: 5px;
+    }
+            .form-group input[type="file"] {
+            display: none;
+        }
+        .form-group label {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #1877f2;
+            background-color: #f0f2f5;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .form-group label svg {
+            margin-right: 10px;
+        }
+        .form-group label:hover {
+            background-color: #1877f2;
+            color: #f0f2f5;
+        }
+        #bouton button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 5px;
+            background-color: #1877f2;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #36a420;
+        }
+        /* #bouton button{
+            margin-top: 5px;
+            background-color: #f0f2f5;
+            color: #165dbb;
+            border-radius: 7px;
+            border: none;
+            position: sticky;
+            bottom: 0;
+        } */
+
+
+</style>
+
+<!-- Overlay avec la fenêtre -->
+<div class="overlay" id="popup">
+    <div  class="modal1 mod">
+        <div class="tete">
+    
+            <h2>Créer un Evènement</h2>
+            <svg class="close-btn" onclick="fermerFenetre1()" ofill="#000000" width="30px" height="30px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                <title>Fermer</title>
+                <path d="M19.587 16.001l6.096 6.096c0.396 0.396 0.396 1.039 0 1.435l-2.151 2.151c-0.396 0.396-1.038 0.396-1.435 0l-6.097-6.096-6.097 6.096c-0.396 0.396-1.038 0.396-1.434 0l-2.152-2.151c-0.396-0.396-0.396-1.038 0-1.435l6.097-6.096-6.097-6.097c-0.396-0.396-0.396-1.039 0-1.435l2.153-2.151c0.396-0.396 1.038-0.396 1.434 0l6.096 6.097 6.097-6.097c0.396-0.396 1.038-0.396 1.435 0l2.151 2.152c0.396 0.396 0.396 1.038 0 1.435l-6.096 6.096z"></path>
+            </svg>
+        </div>
+        <hr>
+        <div class="modal-info-user">
+            <img class="photo_profil" src="" alt="">
+            <p class= "user-all"></p>
+        </div>
+        <form class="signup-form" id="signup-form1">
+            <textarea id="contenu1" placeholder="Donne une description de ton évènement!" id="autoInput" ></textarea>
+            <div class="form-group">
+                <input type="file" id="image1" name="image1"  required> <!-- Champ de téléchargement de fichier -->
+                <label for="image1">
+                    <!-- Icône SVG pour le bouton de sélection de fichier -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p>Ajouter une image </p>
+                    <span>ou faites glisser-deposer</span>
+                </label> <!-- Bouton stylisé pour choisir un fichier -->
+            </div>
+    
+            <div id="bouton">
+                <button type="submit">Publier</button>
+            </div>
+        </form>
+    </div>
+    
+
+
+
+
+
+  <div class="modal mod">
+    <div class="tete">
+
+        <h2>Créer votre post</h2>
+        <svg class="close-btn" onclick="fermerFenetre()" ofill="#000000" width="30px" height="30px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+            <title>Fermer</title>
+            <path d="M19.587 16.001l6.096 6.096c0.396 0.396 0.396 1.039 0 1.435l-2.151 2.151c-0.396 0.396-1.038 0.396-1.435 0l-6.097-6.096-6.097 6.096c-0.396 0.396-1.038 0.396-1.434 0l-2.152-2.151c-0.396-0.396-0.396-1.038 0-1.435l6.097-6.096-6.097-6.097c-0.396-0.396-0.396-1.039 0-1.435l2.153-2.151c0.396-0.396 1.038-0.396 1.434 0l6.096 6.097 6.097-6.097c0.396-0.396 1.038-0.396 1.435 0l2.151 2.152c0.396 0.396 0.396 1.038 0 1.435l-6.096 6.096z"></path>
+        </svg>
+    </div>
+    <hr>
+    <div class="modal-info-user">
+        <img class="photo_profil" src="" alt="">
+        <p class= "user-all"></p>
+    </div>
+    <form class="signup-form" id="signup-form">
+        <textarea id="contenu" placeholder="Prêt à partager ton quotidien ?" id="autoInput" ></textarea>
+        <div class="form-group">
+            <input type="file" id="image" name="image"  required> <!-- Champ de téléchargement de fichier -->
+            <label for="image">
+                <!-- Icône SVG pour le bouton de sélection de fichier -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <p>Ajouter une image </p>
+                <span>ou faites glisser-deposer</span>
+            </label> <!-- Bouton stylisé pour choisir un fichier -->
+        </div>
+
+        <div id="bouton">
+            <button type="submit">Publier</button>
+        </div>
+    </form>
+  </div>
+
+  <div class="modal2 mod">
+    <div class="tete">
+
+        <h2>Déclarez un objet perdu</h2>
+        <svg onclick="fermerFenetre2()" class="close-btn"  ofill="#000000" width="30px" height="30px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+            <title>Fermer</title>
+            <path d="M19.587 16.001l6.096 6.096c0.396 0.396 0.396 1.039 0 1.435l-2.151 2.151c-0.396 0.396-1.038 0.396-1.435 0l-6.097-6.096-6.097 6.096c-0.396 0.396-1.038 0.396-1.434 0l-2.152-2.151c-0.396-0.396-0.396-1.038 0-1.435l6.097-6.096-6.097-6.097c-0.396-0.396-0.396-1.039 0-1.435l2.153-2.151c0.396-0.396 1.038-0.396 1.434 0l6.096 6.097 6.097-6.097c0.396-0.396 1.038-0.396 1.435 0l2.151 2.152c0.396 0.396 0.396 1.038 0 1.435l-6.096 6.096z"></path>
+        </svg>
+    </div>
+    <hr>
+    <div class="modal-info-user">
+        <img class="photo_profil" src="" alt="">
+        <p class= "user-all"></p>
+    </div>
+    <form class="signup-form" id="signup-form2">
+        <textarea id="contenu2" placeholder="Prêt à partager ton quotidien ?" id="autoInput" ></textarea>
+        <div class="form-group">
+            <input type="file" id="image2" name="image2"  required> <!-- Champ de téléchargement de fichier -->
+            <label for="image2">
+                <!-- Icône SVG pour le bouton de sélection de fichier -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <p>Ajouter une image </p>
+                <span>ou faites glisser-deposer</span>
+            </label> <!-- Bouton stylisé pour choisir un fichier -->
+        </div>
+
+        <div id="bouton">
+            <button type="submit">Publier</button>
+        </div>
+    </form>
+  </div>
+  
+</div>
+
+<div class="post-create">
+    <div class="info">
+
+        <img class="photo_profil" src="" alt="">
+        <p onclick="ouvrirFenetre()">Quoi de neuf &nbsp; <span class="user-first"></span></p>
+
+    </div>
+    <hr>
+    <div class="post-action">
+        <div onclick="ouvrirFenetre()" class="photo">
+            <svg width="25px" height="25px" viewBox="0 0 1024 1024" class="icon"  version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M924.8 331l-57.7-15.5-17.7-4.7-64.8-17.4v-67.2c0-31.7-16.5-46.8-46.8-46.8h-608c-30.2 0-46.8 15.1-46.8 46.8v483.3c0 31.7 16.5 46.8 46.8 46.8h153.5l492 131.8c29.2 7.8 49-2.5 57.3-33.1l16.1-60.2 108.9-406.6c8.4-30.6-3.7-49.4-32.8-57.2zM161.1 709.5c-25.2 0-31.2-15.2-31.2-31.2V257.4c0-25.2 15.2-31.2 31.2-31.2h545.6c16 0 31.2 6 31.2 31.2v420.9c0 16-6 31.2-31.2 31.2H161.1z m634.5 103.4c-4.1 15.4-13.9 28.5-38.2 22l25.7 6.9-319-85.5h273.8c30.2 0 46.8-15.1 46.8-46.8V341.9l97.8 26.2c15.4 4.1 28.5 13.9 22 38.2l8.1-30.1-17.7-4.8 17.7 4.8-117 436.7zM270.2 304.2c-34.4 0-62.4 27.9-62.4 62.4 0 34.4 27.9 62.4 62.4 62.4 34.4 0 62.4-27.9 62.4-62.4-0.1-34.5-28-62.4-62.4-62.4z" fill="#3CB87F" /><path d="M151.2 737.5c-5.5 0-11-1.8-15.5-5.5-10.5-8.6-12-24-3.5-34.5l147.1-179.8c8.2-10 22.7-11.9 33.2-4.4l94.2 67.3 133-192.1c4.7-6.8 12.2-10.8 20.9-10.6 8.3 0.2 15.9 4.6 20.2 11.7l179.8 294.3c7.1 11.6 3.4 26.6-8.1 33.7-11.6 7-26.7 3.4-33.7-8.1L558.6 447.2 432.9 628.8c-3.7 5.4-9.5 9.1-16 10.2-6.4 1.1-13.1-0.4-18.5-4.2l-95.7-68.4-132.5 162.1c-4.9 5.9-11.9 9-19 9z" fill="#3CB87F" /></svg>
+            <p>Photos</p>
+        </div>
+        <div onclick="ouvrirFenetre1()" class="event">
+            <svg width="25px" height="25px" viewBox="0 0 24 24" fill="#F29F38" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 2a1 1 0 0 0-1 1v1.001c-.961.014-1.34.129-1.721.333a2.272 2.272 0 0 0-.945.945C3.116 5.686 3 6.09 3 7.205v10.59c0 1.114.116 1.519.334 1.926.218.407.538.727.945.945.407.218.811.334 1.926.334h11.59c1.114 0 1.519-.116 1.926-.334.407-.218.727-.538.945-.945.218-.407.334-.811.334-1.926V7.205c0-1.115-.116-1.519-.334-1.926a2.272 2.272 0 0 0-.945-.945C19.34 4.13 18.961 4.015 18 4V3a1 1 0 1 0-2 0v1H8V3a1 1 0 0 0-1-1zM5 9v8.795c0 .427.019.694.049.849.012.06.017.074.049.134a.275.275 0 0 0 .124.125c.06.031.073.036.134.048.155.03.422.049.849.049h11.59c.427 0 .694-.019.849-.049a.353.353 0 0 0 .134-.049.275.275 0 0 0 .125-.124.353.353 0 0 0 .048-.134c.03-.155.049-.422.049-.849L19.004 9H5zm8.75 4a.75.75 0 0 0-.75.75v2.5c0 .414.336.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5a.75.75 0 0 0-.75-.75h-2.5z" fill="#F29F38"/></svg>
+            <p>Evenements</p>
+        </div>
+        <div onclick="ouvrirFenetre2()" class="lost">
+            <svg fill="#58B36C" height="25px" width="25px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+            viewBox="0 0 512 512" xml:space="preserve">
+       <g>
+           <g>
+               <g>
+                   <path d="M59.179,185.707c2.411,5.355,8.683,7.723,14.101,5.355c5.376-2.411,7.765-8.725,5.355-14.101l-24.363-54.165
+                       c-2.411-5.355,0-11.691,5.333-14.101l97.301-43.755c2.624-1.173,5.525-1.259,8.149-0.256c2.667,1.003,4.779,3.008,5.931,5.589
+                       l51.904,115.413c1.813,3.968,5.696,6.315,9.771,6.315c1.451,0,2.944-0.299,4.373-0.939c5.376-2.411,7.765-8.725,5.355-14.101
+                       L190.485,61.547c-3.52-7.787-9.835-13.76-17.835-16.789c-8-3.029-16.683-2.752-24.469,0.747L50.88,89.259
+                       c-16.085,7.232-23.275,26.219-16.043,42.304L59.179,185.707z"/>
+                   <path d="M285.931,184.341c1.323,4.544,5.504,7.659,10.219,7.659h175.68c4.736,0,8.896-3.115,10.219-7.659l18.816-64
+                       c1.536-5.248-1.131-10.816-6.187-12.885c-5.077-2.027-10.88,0.021-13.44,4.843C477.141,120.021,459.563,128,437.333,128
+                       c-24.427,0-42.667-11.264-42.667-21.333v-64C394.667,19.136,375.531,0,352,0c-23.531,0-42.667,19.136-42.667,42.667v10.667
+                       C309.333,59.221,314.112,64,320,64s10.667-4.779,10.667-10.667V42.667c0-11.755,9.579-21.333,21.333-21.333
+                       s21.333,9.579,21.333,21.333v64c0,10.069-18.24,21.333-42.667,21.333c-22.229,0-39.808-7.979-43.925-15.701
+                       c-2.56-4.821-8.427-6.827-13.44-4.843c-5.056,2.069-7.723,7.637-6.187,12.885L285.931,184.341z"/>
+                   <path d="M490.667,213.333H21.333c-5.888,0-10.667,4.779-10.667,10.667v192c0,52.928,43.072,96,96,96h298.667
+                       c52.928,0,96-43.072,96-96V224C501.333,218.112,496.555,213.333,490.667,213.333z M263.467,444.8
+                       c-1.92,2.133-4.693,3.2-7.467,3.2c-2.773,0-5.547-1.067-7.467-3.2c-2.133-1.92-3.2-4.693-3.2-7.467
+                       c0-2.773,1.067-5.547,3.2-7.467c4.053-4.053,10.88-4.053,14.933,0c2.133,1.92,3.2,4.693,3.2,7.467
+                       C266.667,440.107,265.6,442.88,263.467,444.8z M266.709,376.299l-0.021,18.368c0,5.888-4.779,10.667-10.667,10.667
+                       c-5.888,0-10.667-4.8-10.667-10.667L245.376,368c0-4.864,3.285-9.109,8-10.304l2.368-0.576
+                       C271.701,353.451,288,347.115,288,328.021c0-16.171-14.357-29.333-32.021-29.333c-16.896,0-30.955,12.075-32,27.52
+                       c-0.405,5.888-5.163,10.283-11.371,9.92c-5.867-0.405-10.325-5.483-9.92-11.371c1.813-26.603,25.237-47.424,53.312-47.424
+                       c29.419,0,53.355,22.72,53.355,50.667C309.355,351.979,295.019,368.192,266.709,376.299z"/>
+                   <path d="M78.528,113.109c-5.888,0-10.56,4.779-10.56,10.667s4.885,10.667,10.773,10.667s10.667-4.779,10.667-10.667
+                       s-4.779-10.667-10.667-10.667H78.528z"/>
+               </g>
+           </g>
+       </g>
+       </svg>
+       <p>Objet perdu</p>
+        </div>
+    </div>
+</div>
+<script>
+    function ouvrirFenetre() {
+      document.getElementById('popup').style.display = 'flex';
+      document.querySelector('.modal').style.display = 'block'
+
+    }
+
+    function fermerFenetre() {
+      document.getElementById('popup').style.display = 'none';
+      document.querySelector('.modal').style.display = 'none'
+      location.reload()
+    }
+
+    function ouvrirFenetre1(){
+        document.getElementById('popup').style.display = 'flex';
+        document.querySelector('.modal1').style.display = 'block'
+
+    }
+
+    function fermerFenetre1(){
+        document.getElementById('popup').style.display = 'none';
+        document.querySelector('.modal1').style.display = 'none'
+
+    }
+
+    function ouvrirFenetre2(){
+        document.getElementById('popup').style.display = 'flex';
+        document.querySelector('.modal2').style.display = 'block'
+    }
+
+    function fermerFenetre2(){
+        document.getElementById('popup').style.display = 'none';
+        document.querySelector('.modal2').style.display = 'none'
+    }
+    document.getElementById('image').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        // if (file) {
+        //     const reader = new FileReader();
+        // //     reader.onload = function(e) {
+        // //         const preview = document.getElementById('preview');
+        // //         preview.innerHTML = `<img src="${e.target.result}" alt="Aperçu de l'image">`;
+        // //     };
+        // //     reader.readAsDataURL(file);
+        // // }
+    });
+
+    document.getElementById('image1').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        // if (file) {
+        //     const reader = new FileReader();
+        // //     reader.onload = function(e) {
+        // //         const preview = document.getElementById('preview');
+        // //         preview.innerHTML = `<img src="${e.target.result}" alt="Aperçu de l'image">`;
+        // //     };
+        // //     reader.readAsDataURL(file);
+        // // }
+    });
+
+    document.getElementById('signup-form').addEventListener('submit',async function (e) {
+            
+            e.preventDefault()
+            const contenu =document.getElementById('contenu').value
+            const userID = decode().userId
+
+            const response = await fetch('/post',{
+                method : 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body:JSON.stringify({contenu,userID})
+            })
+
+            const result = await response.json()
+            .then(async reslt=>{
+                if (response.ok){
+                    const formData = new FormData();
+                    const fileField = document.getElementById('image');
+    
+                    formData.append('image', fileField.files[0]);
+                
+                    const chemin = `http://localhost:3000/Post/${reslt.message}`
+                    const response = await fetch(chemin, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    fermerFenetre()
+                    const result = await response.json();
+                }
+                            
+    
+                
+            })
+        })
+
+
+
+        // Gestion de la publication d'un évènement
+
+
+        document.getElementById('signup-form1').addEventListener('submit',async function (e) {
+            
+            e.preventDefault()
+
+            const description = document.getElementById('contenu1').value
+            const userId = decode().userId
+
+            const response = await fetch('/event',{
+
+                method : 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body:JSON.stringify({description,userId})
+
+            })
+
+            const result = await response.json()
+            .then(async reslt=>{
+                if (response.ok){
+                    const formData = new FormData();
+                    const fileField = document.getElementById('image1');
+    
+                    formData.append('image', fileField.files[0]);
+                
+                    const chemin = `http://localhost:3000/event/${reslt.message}`
+                    const response = await fetch(chemin, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    fermerFenetre()
+                }
+                            
+    
+                
+            })
+            })
+            document.getElementById('image2').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                // if (file) {
+                //     const reader = new FileReader();
+                // //     reader.onload = function(e) {
+                // //         const preview = document.getElementById('preview');
+                // //         preview.innerHTML = `<img src="${e.target.result}" alt="Aperçu de l'image">`;
+                // //     };
+                // //     reader.readAsDataURL(file);
+                // // }
+            });
+
+
+            document.getElementById('signup-form2').addEventListener('submit',async function (e) {
+            
+            e.preventDefault()
+
+            const description = document.getElementById('contenu2').value
+            const userId = decode().userId
+            const fileField = document.getElementById('image2');
+            const formData = new FormData();
+            formData.append ('description' , description) 
+            formData.append ('userId' , userId) 
+            formData.append ('image' , fileField.files[0]) 
+            const response = await fetch('/lost',{
+
+                method : 'POST',
+                body:formData
+
+            })
+
+            // const result = await response.json()
+            // .then(async reslt=>{
+            //     console.log(reslt)
+            //     if (response.ok){
+    
+                
+            //         const chemin = `http://localhost:3000/lost/${reslt.message}`
+            //         alert(chemin)
+            //         const response = await fetch(chemin, {
+            //             method: 'POST',
+            //             body: formData
+            //         });
+            //         fermerFenetre()
+            //     }
+                            
+    
+                
+            //  })
+            })
+
+
+
+        
+
+// Déclenche une première mise à jour (utile si le texte est déjà présent)
+
+</script>

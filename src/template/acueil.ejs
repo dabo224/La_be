@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil - Responsive</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .section {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr min(600px, 90%) 1fr;
+            gap: 20px;
+            padding: 0 10px;
+        }
+
+        .container {
+            width: 100%;
+            padding: 0;
+            grid-column: 2;
+        }
+
+        .post {
+            background-color: white;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+            border: 1px solid #e4e6ea;
+        }
+
+        .post:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12), 0 12px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .post-header > div {
+            display: flex;
+            align-items: center;
+        }
+
+        .post-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .post-header .username {
+            font-weight: 600;
+            font-size: 15px;
+            color: #1c1e21;
+        }
+
+        .data-createdAt {
+            font-size: 13px;
+            color: #65676b;
+            margin: 0;
+        }
+
+        .post-content {
+            margin-bottom: 12px;
+        }
+
+        .post-content p {
+            margin: 0 0 12px 0;
+            font-size: 15px;
+            color: #1c1e21;
+            line-height: 1.33;
+        }
+
+        .post-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 8px;
+            object-fit: cover;
+        }
+
+        .post-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e4e6ea;
+            margin-bottom: 8px;
+        }
+
+        .likes, .other {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .likes svg, .other svg, .other img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .likes p, .other p {
+            margin: 0;
+            font-size: 15px;
+            color: #65676b;
+        }
+
+        .post-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .post-actions > div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            gap: 8px;
+        }
+
+        .post-actions > div:hover {
+            background-color: #f2f2f2;
+        }
+
+        .post-actions svg, .post-actions img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .post-actions p {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: #65676b;
+        }
+
+        .active-like svg {
+            fill: #1877f2;
+        }
+
+        .active-like p {
+            color: #1877f2;
+        }
+
+        .form {
+            display: grid;
+            grid-template-columns: 40px 1fr auto;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .form img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .form input {
+            border-radius: 20px;
+            border: 1px solid #ccd0d5;
+            background-color: #f0f2f5;
+            outline: none;
+            padding: 8px 12px;
+            font-size: 15px;
+            transition: border-color 0.2s ease;
+        }
+
+        .form input:focus {
+            border-color: #1877f2;
+            background-color: white;
+        }
+
+        .form button {
+            background-color: #1877f2;
+            color: white;
+            border-radius: 6px;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+
+        .form button:hover {
+            background-color: #166fe5;
+        }
+
+        .comment-action {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e4e6ea;
+        }
+
+        .comment-action h4 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 600;
+            color: #1c1e21;
+        }
+
+        .close {
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+
+        .close:hover {
+            background-color: #f2f2f2;
+        }
+
+        .section-comment {
+            max-height: 300px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #bcc0c4 #f0f2f5;
+        }
+
+        .section-comment::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .section-comment::-webkit-scrollbar-track {
+            background: #f0f2f5;
+            border-radius: 4px;
+        }
+
+        .section-comment::-webkit-scrollbar-thumb {
+            background: #bcc0c4;
+            border-radius: 4px;
+        }
+
+        .grand-comments {
+            display: none;
+            margin-bottom: 8px;
+        }
+
+        .comments {
+            display: flex;
+            gap: 8px;
+        }
+
+        .comments img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .comment {
+            background-color: #f0f2f5;
+            padding: 8px 12px;
+            border-radius: 16px;
+            flex: 1;
+        }
+
+        .comment .username {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1c1e21;
+            margin-bottom: 2px;
+        }
+
+        .comment .comment-text {
+            font-size: 15px;
+            color: #1c1e21;
+            margin: 0;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .section {
+                grid-template-columns: 1fr;
+                margin-top: 10px;
+                padding: 0 8px;
+            }
+
+            .container {
+                grid-column: 1;
+            }
+
+            .post {
+                margin-bottom: 12px;
+                border-radius: 8px;
+                padding: 12px;
+            }
+
+            .post-header img {
+                width: 36px;
+                height: 36px;
+                margin-right: 8px;
+            }
+
+            .post-header .username {
+                font-size: 14px;
+            }
+
+            .data-createdAt {
+                font-size: 12px;
+            }
+
+            .post-content p {
+                font-size: 14px;
+            }
+
+            .post-actions {
+                gap: 2px;
+            }
+
+            .post-actions > div {
+                padding: 12px 8px;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .post-actions p {
+                font-size: 12px;
+            }
+
+            .post-actions svg, .post-actions img {
+                width: 24px;
+                height: 24px;
+            }
+
+            .form {
+                grid-template-columns: 32px 1fr auto;
+                gap: 6px;
+            }
+
+            .form img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .form input {
+                font-size: 14px;
+                padding: 6px 10px;
+            }
+
+            .form button {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+
+            .comments img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .comment {
+                padding: 6px 10px;
+            }
+
+            .comment .username {
+                font-size: 12px;
+            }
+
+            .comment .comment-text {
+                font-size: 14px;
+            }
+
+            .section-comment {
+                max-height: 250px;
+            }
+        }
+
+        /* Small Mobile Styles */
+        @media (max-width: 480px) {
+            .section {
+                padding: 0 4px;
+            }
+
+            .post {
+                padding: 8px;
+                margin-bottom: 8px;
+            }
+
+            .post-header {
+                margin-bottom: 8px;
+            }
+
+            .post-content {
+                margin-bottom: 8px;
+            }
+
+            .post-content p {
+                font-size: 13px;
+                margin-bottom: 8px;
+            }
+
+            .post-actions > div {
+                padding: 10px 4px;
+                gap: 2px;
+            }
+
+            .post-actions p {
+                font-size: 11px;
+            }
+
+            .form {
+                margin-bottom: 8px;
+            }
+
+            .form input {
+                font-size: 13px;
+            }
+
+            .form button {
+                font-size: 11px;
+                padding: 5px 8px;
+            }
+
+            .likes p, .other p {
+                font-size: 13px;
+            }
+
+            .comment-action h4 {
+                font-size: 15px;
+            }
+        }
+
+        /* Touch-friendly improvements for mobile */
+        @media (max-width: 768px) {
+            .post-actions > div,
+            .form button,
+            .close,
+            .likes,
+            .other {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            .post-actions > div {
+                min-height: 48px;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #18191a;
+                color: #e4e6ea;
+            }
+
+            .post {
+                background-color: #242526;
+                border-color: #3a3b3c;
+            }
+
+            .post-header .username,
+            .post-content p,
+            .comment .username,
+            .comment .comment-text,
+            .comment-action h4 {
+                color: #e4e6ea;
+            }
+
+            .data-createdAt,
+            .likes p,
+            .other p,
+            .post-actions p {
+                color: #b0b3b8;
+            }
+
+            .post-actions > div:hover {
+                background-color: #3a3b3c;
+            }
+
+            .form input {
+                background-color: #3a3b3c;
+                border-color: #3a3b3c;
+                color: #e4e6ea;
+            }
+
+            .form input:focus {
+                background-color: #242526;
+                border-color: #1877f2;
+            }
+
+            .comment {
+                background-color: #3a3b3c;
+            }
+
+            .close:hover {
+                background-color: #3a3b3c;
+            }
+
+            .section-comment::-webkit-scrollbar-track {
+                background: #3a3b3c;
+            }
+
+            .section-comment::-webkit-scrollbar-thumb {
+                background: #606770;
+            }
+
+            .post-info {
+                border-color: #3a3b3c;
+            }
+
+            .comment-action {
+                border-color: #3a3b3c;
+            }
+        }
+        
+
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .post-header img,
+            .form img,
+            .comments img {
+                image-rendering: -webkit-optimize-contrast;
+            }
+        }
+
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            .post,
+            .post-actions > div,
+            .form input,
+            .form button,
+            .close {
+                transition: none;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .post-actions,
+            .form,
+            .comment-action {
+                display: none;
+            }
+
+            .post {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                page-break-inside: avoid;
+            }
+
+            body {
+                background: white;
+            }
+        }
+        @media (max-width: 320px) {
+    .post {
+        padding: 12px;
+    }
+
+    .post-header img {
+        width: 32px;
+        height: 32px;
+    }
+
+    .post-header .username {
+        font-size: 13px;
+    }
+
+    .post-content p {
+        font-size: 14px;
+    }
+
+    .form input {
+        font-size: 13px;
+    }
+
+    .form button {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+
+    .comment .username {
+        font-size: 12px;
+    }
+
+    .comment .comment-text {
+        font-size: 13px;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <%- include('./partials/header') %>
+    <section class="section">
+        <div class="container">
+            <%- include('./partials/poster') %>
+            <% posts.forEach(post => { %>
+                <div class="post" data-userid="<%= post.User.id %>" data-postid="<%= post.id %>" >
+                    <div class="post-header">
+                        <div>
+                            <% if (post.User.Profil && post.User.Profil.urlPhoto) { %>
+                                <a class="Profil" href="/user/<%=post.User.id %>"><img src="/static/profil/<%=post.User.Profil.urlPhoto %>" alt="User Avatar"></a>
+                            <% } else { %>
+                                <img src="/static/images/images/FB_IMG_1727683607286.jpg" alt="User Avatar">
+                            <% } %>
+                            
+                            <a class="Profil" href="/user/<%=post.User.id %>">
+                                <div class="username"><%= post.User.prenom %> <%= post.User.nom %></div>
+                            </a>
+                        </div>
+                        <p class="data-createdAt" data-createdAt="<%= post.createdAt %>"></p>                    
+                    </div>
+                    
+                    <div class="post-content">
+                        <p id="like"><%= post.contenu %></p>
+                        <% if (post.ImagePost && post.ImagePost.urlPhoto) { %>
+                            <img src="/static/images/posts/<%= post.ImagePost.urlPhoto%>" alt="Post image">
+                        <% } %>
+                    </div>
+                    
+                    <div class="post-info">
+                        <div class="likes" data-like='<%= JSON.stringify(post.Likes.map(like => like.User.id))%>' data-post-id="<%= post.id %>">
+                            <svg width="20px" height="20px" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9 4.5C15.9 3 14.418 2 13.26 2c-.806 0-.869.612-.993 1.82-.055.53-.121 1.174-.267 1.93-.386 2.002-1.72 4.56-2.996 5.325V17C9 19.25 9.75 20 13 20h3.773c2.176 0 2.703-1.433 2.899-1.964l.013-.036c.114-.306.358-.547.638-.82.31-.306.664-.653.927-1.18.311-.623.27-1.177.233-1.67-.023-.299-.044-.575.017-.83.064-.27.146-.475.225-.671.143-.356.275-.686.275-1.329 0-1.5-.748-2.498-2.315-2.498H15.5S15.9 6 15.9 4.5zM5.5 10A1.5 1.5 0 0 0 4 11.5v7a1.5 1.5 0 0 0 3 0v-7A1.5 1.5 0 0 0 5.5 10z" />
+                            </svg>
+                            <p id="nblike"><%= post.nblike %></p>
+                        </div>
+                        <div class="other">
+                            <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 3C6.48 3 2 7.48 2 13c0 1.54.36 2.98.97 4.29L1 23l6.71-1.97C9.02 21.64 10.46 22 12 22c5.52 0 10-4.48 10-10S17.52 3 12 3z" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            <p id="nbcomment"><%= post.nbcomment %></p>
+                            <svg width="20px" height="20px" viewBox="0 -0.5 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.734 15.8974L19.22 12.1374C19.3971 11.9927 19.4998 11.7761 19.4998 11.5474C19.4998 11.3187 19.3971 11.1022 19.22 10.9574L14.734 7.19743C14.4947 6.9929 14.1598 6.94275 13.8711 7.06826C13.5824 7.19377 13.3906 7.47295 13.377 7.78743V9.27043C7.079 8.17943 5.5 13.8154 5.5 16.9974C6.961 14.5734 10.747 10.1794 13.377 13.8154V15.3024C13.3888 15.6178 13.5799 15.8987 13.8689 16.0254C14.158 16.1521 14.494 16.1024 14.734 15.8974Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <p>6</p>
+                        </div>
+                    </div>
+                    
+                    <div class="post-actions">
+                        <div class="btn_like">
+                            <svg width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M15.0501 7.04419C15.4673 5.79254 14.5357 4.5 13.2163 4.5C12.5921 4.5 12.0062 4.80147 11.6434 5.30944L8.47155 9.75H5.85748L5.10748 10.5V18L5.85748 18.75H16.8211L19.1247 14.1428C19.8088 12.7747 19.5406 11.1224 18.4591 10.0408C17.7926 9.37439 16.8888 9 15.9463 9H14.3981L15.0501 7.04419ZM9.60751 10.7404L12.864 6.1813C12.9453 6.06753 13.0765 6 13.2163 6C13.5118 6 13.7205 6.28951 13.627 6.56984L12.317 10.5H15.9463C16.491 10.5 17.0133 10.7164 17.3984 11.1015C18.0235 11.7265 18.1784 12.6814 17.7831 13.472L15.8941 17.25H9.60751V10.7404ZM8.10751 17.25H6.60748V11.25H8.10751V17.25Z" fill="currentColor"/>
+                            </svg>
+                            <p>J'aime</p>
+                        </div>
+                        <div class="btn_comment">
+                            <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 3C6.48 3 2 7.48 2 13c0 1.54.36 2.98.97 4.29L1 23l6.71-1.97C9.02 21.64 10.46 22 12 22c5.52 0 10-4.48 10-10S17.52 3 12 3z" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            <p>Commenter</p>
+                        </div>
+                        <div>
+                            <svg width="20px" height="20px" viewBox="0 -0.5 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.734 15.8974L19.22 12.1374C19.3971 11.9927 19.4998 11.7761 19.4998 11.5474C19.4998 11.3187 19.3971 11.1022 19.22 10.9574L14.734 7.19743C14.4947 6.9929 14.1598 6.94275 13.8711 7.06826C13.5824 7.19377 13.3906 7.47295 13.377 7.78743V9.27043C7.079 8.17943 5.5 13.8154 5.5 16.9974C6.961 14.5734 10.747 10.1794 13.377 13.8154V15.3024C13.3888 15.6178 13.5799 15.8987 13.8689 16.0254C14.158 16.1521 14.494 16.1024 14.734 15.8974Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <p>Partager</p>
+                        </div>
+                    </div>
+                    
+                    <form class="form" action="post">
+                        <img class="photo_profil" src="" alt="Your avatar">
+                        <input type="text" placeholder="Écrivez votre commentaire" name="contenu" id="contenu">
+                        <button type="submit">Envoyer</button>
+                    </form>
+                    
+                    <div class="comment-action">
+                        <h4 class="titreComment">Commentaires</h4>
+                        <svg class="close" fill="currentColor" width="24px" height="24px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                            <title>Fermer</title>
+                            <path d="M19.587 16.001l6.096 6.096c0.396 0.396 0.396 1.039 0 1.435l-2.151 2.151c-0.396 0.396-1.038 0.396-1.435 0l-6.097-6.096-6.097 6.096c-0.396 0.396-1.038 0.396-1.434 0l-2.152-2.151c-0.396-0.396-0.396-1.038 0-1.435l6.097-6.096-6.097-6.097c-0.396-0.396-0.396-1.039 0-1.435l2.153-2.151c0.396-0.396 1.038-0.396 1.434 0l6.096 6.097 6.097-6.097c0.396-0.396 1.038-0.396 1.435 0l2.151 2.152c0.396 0.396 0.396 1.038 0 1.435l-6.096 6.096z"></path>
+                        </svg>
+                    </div>
+                    
+                    <div class="section-comment">
+                        <% if (post.Comments) { %>
+                            <% post.Comments.forEach(comment => { %>
+                                <div class="grand-comments">
+                                    <div class="comments">
+                                        <a class="Profil" href="/user/<%=comment.User.id %>">
+                                            <img src="/static/profil/<%=comment.User.Profil.urlPhoto %>" alt="User Avatar">
+                                        </a>
+                                        <div class="comment">
+                                            <a class="Profil" href="/user/<%=comment.User.id %>">
+                                                <div class="username"><%= comment.User.prenom + ' ' + comment.User.nom %></div>
+                                            </a>    
+                                            <div class="comment-text"><%= comment.contenu %></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>                 
+                        <% } %>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </section>
+
+    <script>
+        // Format dates
+        const createdAtElements = document.querySelectorAll('.data-createdAt');
+        createdAtElements.forEach(element => {
+            const elementDate = element.getAttribute('data-createdAt');
+            const date = new Date(elementDate);
+            element.textContent = date.toLocaleString('fr-FR', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        });
+
+        // Handle likes
+        document.querySelectorAll('.likes').forEach(like => {
+            const likes = JSON.parse(like.getAttribute('data-like'))
+            const postId = like.getAttribute('data-post-id')
+            likes.forEach(element => {
+                if(element == decode().userId){
+                    like.classList.add('active-like')
+                }
+            })
+        })
+
+        // User profile management
+        const user_all = document.querySelectorAll(".user-all")
+        user_all.forEach(element => {
+            element.textContent = decode().all
+        });
+        
+        const photo_profils = document.querySelectorAll(".photo_profil")
+        photo_profils.forEach(element => {
+            element.src = `/static/profil/${decode().photo}`
+        });
+
+        const prenom = document.querySelectorAll(".user-first")
+        prenom.forEach(element => {
+            element.textContent += decode().userPrenom
+        });
+
+        const user_name = document.querySelectorAll(".user-name")
+        user_name.forEach(element => {
+            element.textContent = decode().userNom
+        });
+
+        // Like button functionality
+        const btn_like = document.querySelectorAll('.btn_like')
+        btn_like.forEach(element => {
+            const parent = element.parentElement
+            const section = parent.parentElement  
+            const nblike = section.querySelector('#nblike')
+            
+            element.addEventListener('click', async () => {
+                try {
+                    const send = await fetch(`/post-like/${section.dataset.postid}/${decode().userId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: ''
+                    })
+                    const res = await send.json()
+                    
+                    nblike.textContent = res.data
+                    if(res.stat){
+                        nblike.parentElement.classList.add('active-like')
+                    } else {
+                        nblike.parentElement.classList.remove('active-like')
+                    }
+                } catch (error) {
+                    console.error('Error liking post:', error);
+                }
+            })
+        })
+            
+        // Comment functionality
+        const forms = document.querySelectorAll('.form')
+        forms.forEach(form => {
+            form.addEventListener('submit', async e => {
+                const grand_comments = form.parentElement.querySelector('.grand-comments')
+                const section = form.parentElement                             
+                e.preventDefault()
+
+                const contenu = e.target.contenu.value
+                if (!contenu.trim()) return;
+
+                try {
+                    const response = await fetch('/post-comment', {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ 
+                            contenu, 
+                            postId: section.dataset.postid,
+                            userId: decode().userId 
+                        })
+                    })
+
+                    const result = await response.json()
+
+                    const new_div = document.createElement('div')
+                    new_div.className = 'grand-comments'
+                    new_div.innerHTML = `
+                        <div class="comments">
+                            <img src="/static/profil/${decode().photo}" alt="User Avatar">
+                            <div class="comment">
+                                <div class="username">Vous</div>    
+                                <div class="comment-text">${result.resp.contenu}</div>
+                            </div>
+                        </div>
+                    `
+
+                    form.parentElement.querySelector('#nbcomment').textContent = result.count
+                    grand_comments.prepend(new_div)
+                    grand_comments.style.display = 'block'
+                    new_div.style.display = 'block'
+                    form.reset()
+                } catch (error) {
+                    console.error('Error posting comment:', error);
+                }
+            })
+        })
+
+        // Comment toggle functionality
+        const btn_comment = document.querySelectorAll('.btn_comment')
+        btn_comment.forEach(btn => {
+            btn.addEventListener('click', e => {
+                const post = btn.closest('.post')
+                post.querySelector('.comment-action').style.display = 'flex'
+                post.querySelectorAll('.grand-comments').forEach(div => {
+                    div.style.display = 'block'
+                })
+            })
+        })
+
+        const close = document.querySelectorAll('.close')
+        close.forEach(btn => {
+            btn.addEventListener('click', e => {
+                const post = btn.closest('.post')
+                post.querySelector('.comment-action').style.display = 'none'
+                post.querySelectorAll('.grand-comments').forEach(div => {
+                    div.style.display = 'none'
+                })
+            })
+        })
+
+        // Profile link management
+        const profileLinks = document.querySelectorAll('.Profil')
+        profileLinks.forEach(element => {
+            const tab = element.href.split('/')
+            if(decode().userId == tab[tab.length-1]){
+                element.href += '?info=own'
+            } else {
+                element.href += `/${decode().userId}`
+            }
+        })
+
+        // Touch event optimization for mobile
+        if ('ontouchstart' in window) {
+            document.addEventListener('touchstart', function() {}, {passive: true});
+        }
+    </script>
+</body>
+</html>

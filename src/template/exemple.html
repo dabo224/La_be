@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        body{
+            display: grid;
+            grid-template-columns: 1fr 40% 1fr;
+
+        }
+        .notif_user{
+            display: grid;
+            grid-template-columns: 55px 2fr 1fr;
+            border: solid ;
+            height: fit-content;
+            padding: 5px;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px;
+        }
+        .notif_user img{
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+        }
+
+        .notif_user .info_action{
+            text-align: center;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .notif_user .info_action .action{
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            grid-gap: 5px;
+        }
+        .notif_user .info_action .action .accept{
+            padding: 5px;
+            background-color: green;
+            border-radius: 5px;
+        }
+        .notif_user .info_action .action .decline{
+            padding: 5px;
+            background-color: red;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+
+    </div>
+    <div>
+        <div class="notif_user">
+            <img src="../static/images/posts/1745064284379.jpg" alt="">
+            <p>Demande D'amie de Abdoulaye Dabo</p>
+            <div class="info_action">
+                <div class="action">
+                    <button class="accept">Accepter</button>
+                    <button class="decline">Refuser</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+
+    </div>
+</body>
+</html>
+
+
+        

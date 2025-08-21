@@ -1,0 +1,169 @@
+
+<style>
+    nav{
+        display: grid;
+        grid-template-columns: 1fr 40% 1fr;
+        background-color: white;
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        /* padding: 10px; */
+        z-index: 1000;
+        /* margin-bottom: 200px; */
+        height:fit-content;
+        height: 50px;
+        /* border-bottom: 0.2px solid;
+        box-sizing:; */
+    }
+    nav .info {
+        padding-left: 20px;
+        padding-right: 40px;
+        display: grid;
+        grid-template-columns: repeat(2,50px) 1fr;
+        align-items: center;
+        justify-content: center;
+    }
+    nav .info input {
+        height: 30px;
+        border-radius: 20px;
+        border: none;
+        text-align: center;
+        background-color: #F0F2F5;
+        grid-column: 2/-1;
+        grid-row: 1/2;
+        outline: none;
+
+    }
+    nav .info .search{
+        grid-column: 2/3;
+        grid-row: 1/2;
+        z-index: 1000;
+        height: 25px;
+    }
+    nav .info img{
+        height: 30px;
+        
+    }
+    nav .nav{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .men{
+        /* display: grid;
+        /* display: flex; */
+        /* flex-direction: column; */
+        /* justify-content: center; */ 
+        text-align: center;
+        height: fit-content;
+    }
+    .men::after{
+        content: "";
+        display:block ;
+        width: 0%;
+        font-weight: bolder;
+        height: 3px;
+        background-color: black;
+        transition: 0.2s;
+        position: relative;
+        bottom: -7px;
+    }
+    .men:hover::after{
+        width: 100%;
+        transition: 0.5s;
+    }
+    nav .option{
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+    .photo_profil{
+        height: 40px;
+        width: 40px;
+        border-radius: 50%;
+    }
+    nav img{
+        height: 30px;
+        width: 30px;
+    }
+    .active-nav::after{
+        content: "";
+        display:block ;
+        width: 100%;
+        font-weight: bolder;
+        height: 3px;
+        background-color: black;
+        position: relative;
+        bottom: -7px;    
+        background-color: blue;
+    }
+    .active-nav img{
+        fill: blue;
+    }
+@media screen and (max-width: 768px) {
+    nav {
+        grid-template-columns: auto 1fr auto; /* .nav prend tout l'espace restant */
+    }
+    nav .info,
+    nav .option {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        margin: 0 10px;
+        /* Pas de width: 100% ici */
+    }
+    nav .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-width: 0;
+        /* Pas de width: 100% ici, le 1fr du grid s'en charge */
+    }
+    nav .info input {
+        display: none;
+    }
+}</style>
+</head>
+
+<nav>
+    <div class="info">
+        <img src="/static/images/images/svg/logo-uiv.png" alt="">
+        <img class="search" src="/static/images/images/svg/search-svgrepo-com.svg" alt="">
+        <input type="text" placeholder="Rechercher sur univ-labe">
+    </div>
+    <div class="nav">
+        <a href="/home"  class="men"><img class="seul" src="/static/images/images/svg/home-svgrepo-com.svg" alt=""></a href="#" >
+        <a href="/frinds"  class="men"><img src="/static/images/images/svg/person-team-svgrepo-com.svg" alt=""></a href="#" >
+        <a href="/notifs" id="notif"  class="men"><img src="/static/images/images/svg/notifications-svgrepo-com.svg" alt=""></a href="#" >
+        <a href="/lost"  class="men"><img src="/static/images/images/svg/lost-items-missing-svgrepo-com.svg" alt=""></a href="#" >
+        <a href="/event"  class="men"><img src="/static/images/images/svg/calendar-1195-svgrepo-com.svg" alt=""></a href="#">
+
+    </div>
+    <div class="option">
+        <img class="photo_profil" src="/static/images/images/svg/person-svgrepo-com.svg" alt="">
+    </div>
+<script >
+    function decode (){
+        const base64Url = localStorage.getItem('token').split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+
+                    // console.log(JSON.parse(jsonPayload))
+                    return JSON.parse(jsonPayload)
+    }
+    document.querySelectorAll('.men').forEach(man =>{
+        if(man.href == window.location.href.split('#')[0]){
+
+            man.classList.add('active-nav')
+            
+        }
+
+
+    })
+
+    document.getElementById('notif').href+='/'+decode().userId 
+</script>
+</nav>

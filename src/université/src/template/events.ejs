@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #1877f2;
+        }
+        .event {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .event h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .event p {
+            margin: 5px 0;
+        }
+        .event .date {
+            font-weight: bold;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Published Events</h1>
+        <% if (events.length > 0) { %>
+            <% events.forEach(event => { %>
+                <div class="event">
+                    <h2><%= event.title %></h2>
+                    <p class="date"><%= new Date(event.date).toLocaleDateString() %></p>
+                    <p><%= event.description %></p>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No events available at the moment.</p>
+        <% } %>
+    </div>
+</body>
+</html>
