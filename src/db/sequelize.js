@@ -52,7 +52,7 @@ const Message = messageModel(sequelize,DataTypes)
 
 const initDB = () => {
   sequelize.sync()
-  .then(()=> {
+  .then(async()=> {
     User.hasMany(Post, { foreignKey: 'userId' , onDelete: 'CASCADE'});
     Post.belongsTo(User, { foreignKey: 'userId' });
 
@@ -102,7 +102,8 @@ const initDB = () => {
 
     Message.belongsTo(User, { foreignKey: 'from', as: 'Expediteur' });
     Message.belongsTo(User, { foreignKey: 'to', as: 'Destinataire' });
-
+    await sequelize.query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
+    console.log("SQL mode modifié !");
     console.log('la base de donné a été synchronisé')
     console.log(EventImage)
     // User.create({
