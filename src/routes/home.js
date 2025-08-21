@@ -41,7 +41,7 @@ module.exports = (app) => {
                     attributes: ['id', 'urlPhoto', 'postId']
                 }
             ],
-            group: ['Post.id', 'User.id', 'Comments.id', 'Likes.id'], // Groupement pour éviter les doublons
+            // group: ['Post.id', 'User.id', 'Comments.id', 'Likes.id'], // Groupement pour éviter les doublons
             order: [['createdAt', 'DESC']] // Trie les posts du plus récent au plus ancien
         })
         .then(posts => {
