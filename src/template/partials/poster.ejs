@@ -424,7 +424,7 @@
     
                     formData.append('image', fileField.files[0]);
                 
-                    const chemin = `http://localhost:3000/Post/${reslt.message}`
+                    const chemin = `/Post/${reslt.message}`
                     const response = await fetch(chemin, {
                         method: 'POST',
                         body: formData
