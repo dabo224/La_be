@@ -497,7 +497,7 @@
       <a href="/home" class="nav-item" aria-label="Accueil">
         <img src="/static/images/images/svg/home-svgrepo-com.svg" alt="Accueil" />
       </a>
-      <a id="utilisateurs" href="/utilisateurs" class="nav-item" aria-label="Amis">
+      <a class="utilisateurs-head" href="/utilisateurs" class="nav-item" aria-label="Amis">
         <img src="/static/images/images/svg/person-team-svgrepo-com.svg" alt="Amis" />
       </a>
       <a href="/notifs" id="notif" class="nav-item" aria-label="Notifications">
@@ -541,11 +541,11 @@
         <img src="/static/images/images/svg/home-svgrepo-com.svg" alt="" />
         <span>Accueil</span>
       </a>
-      <a id="utilisateurs" href="/utilisateurs" class="mobile-nav-item" aria-label="Amis">
+      <a class="utilisateurs-head" href="/utilisateurs" class="mobile-nav-item" aria-label="Amis">
         <img src="/static/images/images/svg/person-team-svgrepo-com.svg" alt="" />
         <span>Amis</span>
       </a>
-      <a href="/notifs" id="mobile-notif" class="mobile-nav-item" aria-label="Notifications">
+      <a href="/notifs"class="mobile-notif" class="mobile-nav-item" aria-label="Notifications">
         <img src="/static/images/images/svg/notifications-svgrepo-com.svg" alt="" />
         <span>Notifs</span>
       </a>
@@ -561,8 +561,9 @@
   </div>
 
   <script>
-    document.getElementById('utilisateurs').href += `/${decode().userId}`
-    // Fonction de décodage du token
+    document.querySelectorAll('utilisateurs-head').forEach(user =>{
+      user.href += `/${decode().userId}`
+    })
     function decode() {
       try {
         const base64Url = localStorage.getItem('token')?.split('.')[1];
