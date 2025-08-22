@@ -561,7 +561,7 @@
   </div>
 
   <script>
-    document.getElementById('utilisateurs').href += decode().userId
+    document.getElementById('utilisateurs').href += `/${decode().userId}`
     // Fonction de décodage du token
     function decode() {
       try {

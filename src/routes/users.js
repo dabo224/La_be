@@ -1,101 +1,71 @@
-const { json } = require('express/lib/response')
-const {User,Profil,friendShip, Friendship,Notification} = require('../db/sequelize')
-const {Op, where, Model}= require('sequelize')
-const { Json } = require('sequelize/lib/utils')
+const { User, Profil, Friendship, Notification } = require('../db/sequelize');
+const { Op } = require('sequelize');
 
-module.exports = (app)=>{
-    app.get('/utilisateurs/:id',async (req,res)=>{
-        const userId = req.params.id
-        const data = await User.findAll({
-            where : {
-                id : {
-                    [Op.ne] : userId
-                }
-            },
-            attributes : ['id','nom','prenom'],
-            include : [{
-                model : User,
-                as: 'Friends',
-                where : {
-                    id : userId
+module.exports = (app) => {
+    app.get('/utilisateurs/:id', async (req, res) => {
+        const userId = req.params.id;
+
+        try {
+            const data = await User.findAll({
+                where: {
+                    id: { [Op.ne]: userId }
                 },
-                required : false
-            },
-            {
+                attributes: ['id', 'nom', 'prenom'],
+                include: [
+                    {
+                        model: User,
+                        as: 'Friends',
+                        where: { id: userId },
+                        required: false
+                    },
+                    {
+                        model: Profil,
+                        attributes: ['id', 'urlPhoto'],
+                        required: false
+                    },
+                    {
+                        model: Notification,
+                        as: 'Reception',
+                        where: { userID: userId, contenu: "1" },
+                        required: false
+                    },
+                    {
+                        model: Notification,
+                        as: 'Envoi',
+                        where: { senderId: userId, contenu: '1' },
+                        required: false
+                    }
+                ],
+                distinct: true,
+                order: [['nom', 'ASC']]
+            });
 
-                model : Profil,
-                attributes : ['id','urlPhoto']
-            },
-            {
-                model : Notification,
-                as : 'Reception',
-                where : {
-                    userID : userId,
-                    contenu : "1"
-                },
-                required : false    
+            const attentes = [];
+            const amis = [];
+            const suggestions = [];
 
-            },
-            {
-                model : Notification,
-                as : 'Envoi',
-                where : {
-                    senderId : userId,
-                    contenu : '1'
-                },
-                required : false
-            }
-            ],
-            // raw : true
-            // nest : true
-            group : ['User.id']
-        })
+            const users = data.map(el => {
+                const user = {
+                    id: el.id,
+                    nom: el.nom,
+                    prenom: el.prenom,
+                    Friends: el.Friends && el.Friends[0] ? el.Friends[0].id : null,
+                    Profil: el.Profil ? { id: el.Profil.id, urlPhoto: el.Profil.urlPhoto } : null,
+                    Reception: el.Reception && el.Reception[0] ? el.Reception[0].id : null,
+                    Envoi: el.Envoi && el.Envoi[0] ? el.Envoi[0].id : null
+                };
 
-        // console.log(data)
+                if (user.Envoi || user.Reception) attentes.unshift(user);
+                else if (user.Friends) amis.unshift(user);
+                else suggestions.unshift(user);
 
-        const users = []
-        const attentes = []
-        const amis = []
-        const suggestions = []
+                return user;
+            });
 
-        data.forEach(element => {
-            const user = {
-                id : element.id,
-                nom : element.nom,
-                prenom : element.prenom,
-                Friends :  element.Friends[0] ? element.Friends[0].id : null,
-
-                Profil : {
-                    id : element.Profil.id,
-                    urlPhoto : element.Profil.urlPhoto 
-                },
-                Reception : element.Reception[0] ? element.Reception[0].id : null,
-                Envoi : element.Envoi[0] ? element.Envoi[0].id : null
-
-            }
-            if (user.Envoi || user.Reception){
-                attentes.unshift(user)
-            }
-            else if(user.Friends){
-                amis.unshift(user)
-            }
-            else{
-                suggestions.unshift(user)
-            }
-
-            users.unshift(user)
-        });
-        // const users = []
-        // const 
-        // data.forEach(element => {
-        //     users.unshift(element.get({plain : true}))
-        // });
-        // // const users = data.map(u => u.get({plain : true}))
-        // console.log(data instanceof Model)
-        // const users = await data.get({plain : true})
-        console.log(amis)
-        console.log(suggestions)
-        return res.render('utilisateurs',{suggestions,amis,attentes})
-        // return res.json({users : users})
-    })
-}
+            return res.render('utilisateurs', { suggestions, amis, attentes });
+        } catch (err) {
+            console.error("❌ Erreur GET /utilisateurs/:id :", err);
+            return res.status(500).json({ error: err.message, stack: err.stack });
+        }
+    });
+};
