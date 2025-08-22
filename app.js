@@ -52,8 +52,6 @@ require('./src/routes/send_notif')(app)
 require('./src/routes/lostObject')(app)
 require('./src/routes/users')(app)
 require('./src/routes/Event')(app)
-require('./src/routes/Event')(app)
-require('./src/routes/Event')(app)
 require('./src/routes/messages')(app);
 initDB();
 

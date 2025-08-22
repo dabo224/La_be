@@ -61,7 +61,8 @@ module.exports = (app) => {
                 }
             
             ],
-            group: ['User.id', 'Posts.id', 'Posts->Comments.id','Posts->User.id','Posts->User->Profil.id' , 'Posts->Comments->User.id','Posts->Comments->User->Profil.id','Posts->Likes.id', 'Posts->Likes->User.id'] // 🔹 Groupement pour éviter les doublons
+            // group: ['User.id', 'Posts.id', 'Posts->Comments.id','Posts->User.id','Posts->User->Profil.id' , 'Posts->Comments->User.id','Posts->Comments->User->Profil.id','Posts->Likes.id', 'Posts->Likes->User.id'] // 🔹 Groupement pour éviter les doublons
+            distinct: true
         })
         .then(user => {
             if (!user) {
