@@ -497,7 +497,7 @@
       <a href="/home" class="nav-item" aria-label="Accueil">
         <img src="/static/images/images/svg/home-svgrepo-com.svg" alt="Accueil" />
       </a>
-      <a href="/friends" class="nav-item" aria-label="Amis">
+      <a id="utilisateurs" href="/utilisateurs" class="nav-item" aria-label="Amis">
         <img src="/static/images/images/svg/person-team-svgrepo-com.svg" alt="Amis" />
       </a>
       <a href="/notifs" id="notif" class="nav-item" aria-label="Notifications">
@@ -541,7 +541,7 @@
         <img src="/static/images/images/svg/home-svgrepo-com.svg" alt="" />
         <span>Accueil</span>
       </a>
-      <a href="/friends" class="mobile-nav-item" aria-label="Amis">
+      <a id="utilisateurs" href="/utilisateurs" class="mobile-nav-item" aria-label="Amis">
         <img src="/static/images/images/svg/person-team-svgrepo-com.svg" alt="" />
         <span>Amis</span>
       </a>
@@ -561,6 +561,7 @@
   </div>
 
   <script>
+    document.getElementById('utilisateurs').href += decode().userId
     // Fonction de décodage du token
     function decode() {
       try {
