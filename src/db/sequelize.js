@@ -59,8 +59,8 @@ const initDB = () => {
     User.hasMany(Event, { foreignKey: 'userId' , onDelete: 'CASCADE'});
     Event.belongsTo(User, { foreignKey: 'userId' });
 
-    Event.hasOne(EventImage, { foreignKey: 'evnentId' , onDelete: 'CASCADE'});
-    EventImage.belongsTo(Event, { foreignKey: 'evnentId' });
+    Event.hasOne(EventImage, { foreignKey: 'eventId', onDelete: 'CASCADE' });
+    EventImage.belongsTo(Event, { foreignKey: 'eventId' });
 
 
     User.hasOne(Profil, { foreignKey: { name: 'userId', unique: true }, onDelete: 'CASCADE'});
