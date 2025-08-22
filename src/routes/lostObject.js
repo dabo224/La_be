@@ -30,8 +30,9 @@ module.exports = (app) =>{
                     }]
                 },
             ],
-            group: ['ObjetPerdu.id', 'User.id', 'User->Profil.userId'], // Groupement pour éviter les doublons
-            order: [['createdAt', 'DESC']] // Trie les posts du plus récent au plus ancien
+            // group: ['ObjetPerdu.id', 'User.id', 'User->Profil.userId'], // Groupement pour éviter les doublons
+            distinct: true,
+            order: ['createdAt', 'DESC'] // Trie les posts du plus récent au plus ancien
         })
         .then(objs =>{
             res.render('lost',{objs})
