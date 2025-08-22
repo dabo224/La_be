@@ -1,87 +1,66 @@
-const {ObjetsPerdus,User,Profil} = require('../db/sequelize');
-const multer = require('multer'); // Importer le module multer pour gérer les téléchargements de fichiers
-const path = require('path'); // Importer le module path pour gérer les chemins de fichiers
+const { ObjetsPerdus, User, Profil } = require('../db/sequelize');
+const multer = require('multer');
+const path = require('path');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, './src/static/images/objet_Perdus/'); // Spécifier le dossier de destination des fichiers téléchargés
+        cb(null, './src/static/images/objet_Perdus/');
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); // Renommer le fichier avec un timestamp et conserver l'extension d'origine
+        cb(null, Date.now() + path.extname(file.originalname));
     }
 });
 
-const upload = multer({ storage: storage }); // Créer une instance de multer avec la configuration de stockage
+const upload = multer({ storage: storage });
 
-module.exports = (app) =>{
+module.exports = (app) => {
 
-    app.get('/lost',(req,res)=>{
+    // 🔹 Récupérer les objets perdus
+    app.get('/lost', (req, res) => {
         ObjetsPerdus.findAll({
             include: [
                 {
-                    model: User,  // Auteur du post
+                    model: User,
                     attributes: ['id', 'nom', 'prenom', 'email'],
                     include: [{
-
                         model: Profil,
                         attributes: ['userId', 'urlPhoto']
-
-                        
                     }]
                 },
             ],
-            // group: ['ObjetPerdu.id', 'User.id', 'User->Profil.userId'], // Groupement pour éviter les doublons
             distinct: true,
-            order: ['createdAt', 'DESC'] // Trie les posts du plus récent au plus ancien
+            order: [['createdAt', 'DESC']] // ✅ correction
         })
-        .then(objs =>{
-            res.render('lost',{objs})
+        .then(objs => {
+            res.render('lost', { objs });
         })
-    })
+        .catch(err => {
+            console.error("❌ Erreur GET /lost :", err);
+            res.status(500).json({ error: err.message });
+        });
+    });
 
-    app.post('/lost',upload.single('image'),(req,res) =>{
+    // 🔹 Créer un objet perdu
+    app.post('/lost', upload.single('image'), (req, res) => {
+        const { description, userId } = req.body;
+        const image = req.file ? req.file.filename : null; // ✅ sécurité
 
-        const {description,userId} = req.body
-
-        console.log(req.file.filename)
         User.findByPk(userId)
-        .then((user)=>{
-            if(user){
-
-                if(description ){
-    
-                    ObjetsPerdus.create({description,userId,image:req.file.filename})
-                    .then(p =>{
-                        res.status(200).json({message : p.id})
-
-                    })
-    
-                }
-                else{
-                    res.status(400).json({message:'veillez le champ contenu !'})
-                }
+        .then(user => {
+            if (!user) {
+                return res.status(400).json({ error: "Cet utilisateur n'existe pas" });
             }
-            else{
-                res.status(400).json({error : `cet utilisateur n'existe pas`})
+
+            if (!description) {
+                return res.status(400).json({ message: "Veuillez remplir le champ description !" });
             }
+
+            return ObjetsPerdus.create({ description, userId, image })
+                .then(p => res.status(200).json({ message: p.id }));
         })
-        .catch(e=>{
-            res.status(500).json({error : e})
-        })
-
-
-    })
-
-
-
-
-    // Configuration de multer pour le stockage des fichiers
-
-
-// Route pour télécharger une image
-
-
-
-
-
-}
+        .catch(err => {
+            console.error("❌ Erreur POST /lost :", err);
+            res.status(500).json({ error: err.message });
+        });
+    });
+};
