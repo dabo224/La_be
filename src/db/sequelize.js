@@ -21,9 +21,9 @@ const messageModel = require('../models/message')
 // })
 
 const sequelize = new Sequelize(
-  process.env.MYSQL_DATABASE,
-  process.env.MYSQL_USER,
-  process.env.MYSQL_ROOT_PASSWORD,
+  process.env.MYSQL_DATABASE || 'université',
+  process.env.MYSQL_USER || 'root',
+  process.env.MYSQL_ROOT_PASSWORD || '',
   {
     dialect: 'mysql',
     host: process.env.MYSQL_HOST,
