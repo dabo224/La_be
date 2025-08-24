@@ -28,20 +28,39 @@
         }
         #friend {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 28px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
             width: 100%;
+        }
+        @media (max-width: 1200px) {
+            #friend {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 900px) {
+            #friend {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+        }
+        @media (max-width: 600px) {
+            #friend {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
         }
         .friend-user {
             background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(24,119,242,0.08);
+            border-radius: 14px;
+            box-shadow: 0 2px 10px rgba(24,119,242,0.07);
             overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
             transition: box-shadow 0.2s;
             min-width: 0;
+            max-width: 260px;
+            margin: 0 auto;
         }
         .friend-user:hover {
             box-shadow: 0 8px 32px rgba(24,119,242,0.13);
@@ -216,11 +235,40 @@
                 margin-bottom: 18px;
                 padding: 8px 0;
                 justify-content: center;
+                width: 100%;
+                border-radius: 0;
+                box-shadow: none;
             }
             .user-nav-btn {
                 text-align: center;
                 font-size: 1rem;
                 padding: 10px 12px;
+                flex: 1;
+                border-radius: 0;
+            }
+        }
+        @media (max-width: 600px) {
+            .user-nav {
+                flex-direction: row;
+                width: 100vw;
+                left: 0;
+                right: 0;
+                position: fixed;
+                top: 0;
+                z-index: 10;
+                margin: 0;
+                border-radius: 0;
+                box-shadow: 0 2px 8px rgba(24,119,242,0.08);
+                padding: 0;
+            }
+            .user-nav-btn {
+                font-size: 0.98rem;
+                padding: 10px 0;
+                flex: 1;
+                border-radius: 0;
+            }
+            section {
+                margin-top: 56px !important;
             }
         }
     </style>
