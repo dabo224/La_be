@@ -177,164 +177,239 @@
 <body>
     <%- include('./partials/header') %>
 
+    <style>
+        .user-nav {
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(24,119,242,0.08);
+            padding: 24px 0;
+            min-width: 180px;
+            margin-right: 32px;
+            gap: 12px;
+            position: sticky;
+            top: 24px;
+            height: fit-content;
+        }
+        .user-nav-btn {
+            background: none;
+            border: none;
+            font-size: 1.08rem;
+            font-weight: 600;
+            color: #1877f2;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            text-align: left;
+        }
+        .user-nav-btn.active {
+            background: #1877f2;
+            color: #fff;
+        }
+        @media (max-width: 900px) {
+            .user-nav {
+                flex-direction: row;
+                min-width: unset;
+                margin-right: 0;
+                margin-bottom: 18px;
+                padding: 8px 0;
+                justify-content: center;
+            }
+            .user-nav-btn {
+                text-align: center;
+                font-size: 1rem;
+                padding: 10px 12px;
+            }
+        }
+    </style>
+
     <div class="friend-section">
-        <div></div>
-        <section>
-            <h1>Amis</h1>
-            <div id="friend">
-                <% if (amis) { %>
-                <% amis.forEach(user => { %>
-                    <div class="friend-user">
-                        <img src="/static/profil/<%= user.Profil.urlPhoto %>" alt="">
-                        <div class="bouton">
-                            <p><%= user.prenom %> <%= user.nom %></p>
-                            <div class="action">
-                                <% if (user.Reception) { %>
-                                    <button class="acc_demande" data-friendId="<%= user.id %>">Valider Demande</button>
-                                    <button class="ref_demande">Refuser</button>
-                                <% } else if(user.Envoi) { %>
-                                    <button class="ann_demande" data-friendId="<%= user.id %>">Annuler demande</button>
-                                    <button class="supp">Supprimer</button>
-                                <% } else if(user.Friends) { %>
-                                    <button class="voir_profil" data-friendId="<%= user.id %>">Voir Profil</button>
-                                    <button class="supp">Supprimer</button>
-                                <% } else { %>
-                                    <button class="ajout_ami" data-friendId="<%= user.id %>">Ajouter Ami(e)</button>
-                                    <button class="voir_profil">Voir Profil</button>
-                                <% } %>
+        <div class="user-nav" id="userNav">
+            <button class="user-nav-btn active" data-section="amis">Amis</button>
+            <button class="user-nav-btn" data-section="attente">Demande en attente</button>
+            <button class="user-nav-btn" data-section="suggestion">Suggestions</button>
+        </div>
+        <section style="width:100%">
+            <div id="section-amis">
+                <h1>Amis</h1>
+                <div id="friend">
+                    <% if (amis) { %>
+                    <% amis.forEach(user => { %>
+                        <div class="friend-user">
+                            <img src="/static/profil/<%= user.Profil.urlPhoto %>" alt="">
+                            <div class="bouton">
+                                <p><%= user.prenom %> <%= user.nom %></p>
+                                <div class="action">
+                                    <% if (user.Reception) { %>
+                                        <button class="acc_demande" data-friendId="<%= user.id %>">Valider Demande</button>
+                                        <button class="ref_demande">Refuser</button>
+                                    <% } else if(user.Envoi) { %>
+                                        <button class="ann_demande" data-friendId="<%= user.id %>">Annuler demande</button>
+                                        <button class="supp">Supprimer</button>
+                                    <% } else if(user.Friends) { %>
+                                        <button class="voir_profil" data-friendId="<%= user.id %>">Voir Profil</button>
+                                        <button class="supp">Supprimer</button>
+                                    <% } else { %>
+                                        <button class="ajout_ami" data-friendId="<%= user.id %>">Ajouter Ami(e)</button>
+                                        <button class="voir_profil">Voir Profil</button>
+                                    <% } %>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <% }); %>
-                <% } %>
+                    <% }); %>
+                    <% } %>
+                </div>
             </div>
-            <h1>Demande En Attente</h1>
-            <div id="friend">
-                <% if (attentes) { %>
-                <% attentes.forEach(user => { %>
-                    <div class="friend-user">
-                        <img src="/static/profil/<%= user.Profil.urlPhoto %>" alt="">
-                        <div class="bouton">
-                            <p><%= user.prenom %> <%= user.nom %></p>
-                            <div class="action">
-                                <% if (user.Reception) { %>
-                                    <button class="acc_demande" data-friendId="<%= user.id %>" data-notifId="<%= user.Reception %>">Accepter</button>
-                                    <button class="ref_demande" data-notifId="<%= user.Reception %>">Refuser</button>
-                                <% } else if(user.Envoi) { %>
-                                    <button class="supp">Voir Profil</button>
-                                    <button class="ann_demande" data-notifId="<%= user.Envoi %>" data-friendId="<%= user.id %>">Annuler</button>
-                                <% } else if(user.Friends) { %>
-                                    <button class="voir_profil" data-friendId="<%= user.id %>">Voir Profil</button>
-                                    <button class="supp">Supprimer</button>
-                                <% } else { %>
-                                    <button class="ajout_ami" data-friendId="<%= user.id %>">Ajouter Ami(e)</button>
-                                    <button class="voir_profil">Voir Profil</button>
-                                <% } %>
+            <div id="section-attente" style="display:none">
+                <h1>Demande En Attente</h1>
+                <div id="friend">
+                    <% if (attentes) { %>
+                    <% attentes.forEach(user => { %>
+                        <div class="friend-user">
+                            <img src="/static/profil/<%= user.Profil.urlPhoto %>" alt="">
+                            <div class="bouton">
+                                <p><%= user.prenom %> <%= user.nom %></p>
+                                <div class="action">
+                                    <% if (user.Reception) { %>
+                                        <button class="acc_demande" data-friendId="<%= user.id %>" data-notifId="<%= user.Reception %>">Accepter</button>
+                                        <button class="ref_demande" data-notifId="<%= user.Reception %>">Refuser</button>
+                                    <% } else if(user.Envoi) { %>
+                                        <button class="supp">Voir Profil</button>
+                                        <button class="ann_demande" data-notifId="<%= user.Envoi %>" data-friendId="<%= user.id %>">Annuler</button>
+                                    <% } else if(user.Friends) { %>
+                                        <button class="voir_profil" data-friendId="<%= user.id %>">Voir Profil</button>
+                                        <button class="supp">Supprimer</button>
+                                    <% } else { %>
+                                        <button class="ajout_ami" data-friendId="<%= user.id %>">Ajouter Ami(e)</button>
+                                        <button class="voir_profil">Voir Profil</button>
+                                    <% } %>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <% }); %>
-                <% } %>
+                    <% }); %>
+                    <% } %>
+                </div>
             </div>
-            <h1>Suggestions</h1>
-            <div id="friend">
-                <% if (suggestions) { %>
-                <% suggestions.forEach(user => { %>
-                    <div class="friend-user">
-                        <img src="/static/profil/<%= user.Profil.urlPhoto %>" alt="">
-                        <div class="bouton">
-                            <p><%= user.prenom %> <%= user.nom %></p>
-                            <div class="action">
-                                <% if (user.Reception) { %>
-                                    <button class="acc_demande" data-friendId="<%= user.id %>" data-notifId="<%= user.Reception.id %>">Valider Demande</button>
-                                    <button class="ref_demande" data-notifId="<%= user.Reception.id %>">Refuser</button>
-                                <% } else if(user.Envoi) { %>
-                                    <button class="ann_demande" data-friendId="<%= user.id %>">Annuler demande</button>
-                                    <button class="supp">Supprimer</button>
-                                <% } else if(user.Friends) { %>
-                                    <button class="voir_profil" data-friendId="<%= user.id %>">Voir Profil</button>
-                                    <button class="supp">Supprimer</button>
-                                <% } else { %>
-                                    <button class="ajout_ami" data-friendId="<%= user.id %>">Ajouter Ami(e)</button>
-                                    <button class="voir_profil">Voir Profil</button>
-                                <% } %>
+            <div id="section-suggestion" style="display:none">
+                <h1>Suggestions</h1>
+                <div id="friend">
+                    <% if (suggestions) { %>
+                    <% suggestions.forEach(user => { %>
+                        <div class="friend-user">
+                            <img src="/static/profil/<%= user.Profil.urlPhoto %>" alt="">
+                            <div class="bouton">
+                                <p><%= user.prenom %> <%= user.nom %></p>
+                                <div class="action">
+                                    <% if (user.Reception) { %>
+                                        <button class="acc_demande" data-friendId="<%= user.id %>" data-notifId="<%= user.Reception.id %>">Valider Demande</button>
+                                        <button class="ref_demande" data-notifId="<%= user.Reception.id %>">Refuser</button>
+                                    <% } else if(user.Envoi) { %>
+                                        <button class="ann_demande" data-friendId="<%= user.id %>">Annuler demande</button>
+                                        <button class="supp">Supprimer</button>
+                                    <% } else if(user.Friends) { %>
+                                        <button class="voir_profil" data-friendId="<%= user.id %>">Voir Profil</button>
+                                        <button class="supp">Supprimer</button>
+                                    <% } else { %>
+                                        <button class="ajout_ami" data-friendId="<%= user.id %>">Ajouter Ami(e)</button>
+                                        <button class="voir_profil">Voir Profil</button>
+                                    <% } %>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <% }); %>
-                <% } %>
+                    <% }); %>
+                    <% } %>
+                </div>
             </div>
         </section>
         <div></div>
     </div>
         
     <script>
-        // Gestion du bouton Ajouter Ami(e)
-        document.querySelectorAll('.ajout_ami').forEach(acc => {
-            acc.addEventListener('click', async () => {
-                const response = await fetch('/notif?demande=true', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ userID: acc.getAttribute('data-friendId'), senderId: decode().userId })
-                });
-                if (response.ok) {
-                    alert('Demande envoyée avec succès');
-                }
+    // Navigation logic
+    const navBtns = document.querySelectorAll('.user-nav-btn');
+    const sections = {
+        amis: document.getElementById('section-amis'),
+        attente: document.getElementById('section-attente'),
+        suggestion: document.getElementById('section-suggestion')
+    };
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            navBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            Object.keys(sections).forEach(key => {
+                sections[key].style.display = (btn.dataset.section === key) ? '' : 'none';
             });
         });
-        // Gestion du bouton Refuser
-        document.querySelectorAll('.ref_demande').forEach(element => {
-            element.addEventListener('click', async () => {
-                const response = await fetch(`/notif/${element.getAttribute('data-notifId')}`, {
+    });
+
+    // Gestion du bouton Ajouter Ami(e)
+    document.querySelectorAll('.ajout_ami').forEach(acc => {
+        acc.addEventListener('click', async () => {
+            const response = await fetch('/notif?demande=true', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userID: acc.getAttribute('data-friendId'), senderId: decode().userId })
+            });
+            if (response.ok) {
+                alert('Demande envoyée avec succès');
+            }
+        });
+    });
+    // Gestion du bouton Refuser
+    document.querySelectorAll('.ref_demande').forEach(element => {
+        element.addEventListener('click', async () => {
+            const response = await fetch(`/notif/${element.getAttribute('data-notifId')}`, {
+                method: 'DELETE'
+            });
+            const result = await response.json();
+            if (result.delete) {
+                const parent = element.parentElement;
+                const parent1 = parent.parentElement;
+                parent1.parentElement.style.display = 'none';
+            }
+        });
+    });
+    // Gestion du bouton Accepter
+    document.querySelectorAll('.acc_demande').forEach(element => {
+        element.addEventListener('click', async () => {
+            const response = await fetch('/friend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ friendId: element.getAttribute('data-friendId'), userId: decode().userId })
+            });
+            const result = await response.json();
+            if (result.friend) {
+                const parent = element.parentElement;
+                const parent1 = parent.parentElement;
+                parent1.parentElement.style.display = 'none';
+                alert('Demande d\'amis acceptée avec succès');
+                await fetch(`/notif/${element.getAttribute('data-notifId')}?all=true`, {
                     method: 'DELETE'
                 });
-                const result = await response.json();
-                if (result.delete) {
-                    const parent = element.parentElement;
-                    const parent1 = parent.parentElement;
-                    parent1.parentElement.style.display = 'none';
-                }
-            });
+            }
         });
-        // Gestion du bouton Accepter
-        document.querySelectorAll('.acc_demande').forEach(element => {
-            element.addEventListener('click', async () => {
-                const response = await fetch('/friend', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ friendId: element.getAttribute('data-friendId'), userId: decode().userId })
-                });
-                const result = await response.json();
-                if (result.friend) {
-                    const parent = element.parentElement;
-                    const parent1 = parent.parentElement;
-                    parent1.parentElement.style.display = 'none';
-                    alert('Demande d\'amis acceptée avec succès');
-                    await fetch(`/notif/${element.getAttribute('data-notifId')}?all=true`, {
-                        method: 'DELETE'
-                    });
-                }
+    });
+    // Gestion du bouton Annuler
+    document.querySelectorAll('.ann_demande').forEach(element => {
+        element.addEventListener('click', async () => {
+            const response = await fetch(`/notif/${element.getAttribute('data-notifId')}?all=true`, {
+                method: 'DELETE'
             });
+            const result = await response.json();
+            if (result.delete) {
+                location.reload();
+                const parent = element.parentElement;
+                const parent1 = parent.parentElement;
+                parent1.parentElement.style.display = 'none';
+            }
         });
-        // Gestion du bouton Annuler
-        document.querySelectorAll('.ann_demande').forEach(element => {
-            element.addEventListener('click', async () => {
-                const response = await fetch(`/notif/${element.getAttribute('data-notifId')}?all=true`, {
-                    method: 'DELETE'
-                });
-                const result = await response.json();
-                if (result.delete) {
-                    location.reload();
-                    const parent = element.parentElement;
-                    const parent1 = parent.parentElement;
-                    parent1.parentElement.style.display = 'none';
-                }
-            });
-        });
+    });
     </script>
 </body>
 </html>
