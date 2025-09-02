@@ -3,114 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Objets Perdus</title>
     <style>
-        body{
-            background-color: #f0f2f5;
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            margin: 0;
+            padding: 0;
+            color: var(--dark);
+            line-height: 1.6;
         }
-        .lost{
+
+        .lost {
             display: grid;
-            grid-template-columns: 1fr 40% 1fr;
+            grid-template-columns: 1fr;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
-        #lost,#lost img{
+
+        .section-lost {
             width: 100%;
-            border:solid 1px;
         }
-        .losts{
+
+        .section-lost h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .losts {
             background-color: white;
+            border-radius: var(--radius);
             padding: 20px;
             margin-bottom: 20px;
-            border-radius: 8px;
-            /* position: relative;
-            right: 25px; */
-            box-shadow: 15px 15px 10px  rgba(0, 0, 0, 0.3);
-            min-width: 300px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
-        .losts .profil {
+
+        .losts:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .profil {
             display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 15px;
         }
-        .lost img{
-            width: 100%;
-        }
-        .losts .profil img{
+
+        .profil img {
             width: 50px;
             height: 50px;
-            border-radius: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
         }
-        .losts .img {
-            display: grid ;
-            grid-template-rows: 1fr 40px;
-        }
-        .img img{
-            grid-row: 1 / -1;
-            grid-column: 1 / -1;
-        }
-        .img .action{
-            grid-row: -1 / -2;
-            grid-column: 1 / -1;
 
+        .profil p {
+            margin: 0;
+            font-weight: 500;
+            color: var(--dark);
         }
-        .img .action{
+
+        .losts p {
+            margin: 10px 0;
+            color: var(--gray);
+        }
+
+        .img {
+            position: relative;
+            margin-top: 15px;
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .img img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: var(--radius);
+        }
+
+        .action {
             display: grid;
-            grid-template-columns: repeat(2,1fr);
-            /* justify-content: space-around; */
-            justify-content: space-around;
-            grid-gap: 1px;
-            background-color: #f0f2f5;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
         }
-        .img .action button{
-            background-color: blue;
-            border: none;
-            border-radius: 0 0 5px 0;
-            padding: 5px;
 
+        .action button {
+            padding: 10px;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        .img .action :first-child{
-            border-radius: 0 0 0 5px;
+
+        .action button:first-child {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .action button:last-child {
+            background-color: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .action button:hover {
+            opacity: 0.9;
+        }
+
+        @media (min-width: 768px) {
+            .lost {
+                grid-template-columns: 1fr 2fr 1fr;
+                gap: 20px;
+            }
+            .img img {
+                height: 300px;
+            }
         }
     </style>
 </head>
 <body>
     <%- include('./partials/header') %>
     <section class="lost">
-        <div>
-
-        </div>
+        <div></div>
         <div class="section-lost">
-            <h1>Objet Perdus</h1>
+            <h1>Objets Perdus</h1>
             <div>
-                <% objs.forEach(obj => {%>
-                    
+                <% objs.forEach(obj => { %>
                     <div class="losts">
-                        <div class="profil" >
-                            <img  src="/static/profil/<%= obj.User.Profil.urlPhoto %>" alt="">
-                            <p>
-                                <%= obj.User.prenom + '' + obj.User.nom  %>
-                            </p>
+                        <div class="profil">
+                            <img src="/static/profil/<%= obj.User.Profil.urlPhoto %>" alt="Photo de profil">
+                            <p><%= obj.User.prenom %> <%= obj.User.nom %></p>
                         </div>
-                        <p>
-                            <%= obj.description %>
-                        </p>
+                        <p><%= obj.description %></p>
                         <div class="img">
-    
-                            <img src="/static/images/objet_Perdus/<%= obj.image %> ">
+                            <img src="/static/images/objet_Perdus/<%= obj.image %>" alt="Objet perdu">
                             <div class="action">
                                 <button>Contacter</button>
                                 <button>Laisser un avis</button>
-                                
                             </div>
                         </div>
                     </div>
-                <% 
-                }); 
-                 %>
+                <% }); %>
             </div>
         </div>
-        <div>
-
-        </div>
+        <div></div>
     </section>
 </body>
 </html>

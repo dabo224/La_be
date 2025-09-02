@@ -1,219 +1,389 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        nav{
-            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mes notifications</title>
 
-        }
-        .page-notif{
-            display: grid;
-            grid-template-columns: 1fr 40% 1fr;
-            margin-top: 50px;
+  <style>
+    :root{
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #2563eb;       /* bleu pro */
+      --primary-600:#1d4ed8;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --ring: rgba(37, 99, 235, .35);
+      --shadow: 0 6px 24px rgba(2, 6, 23, .08);
+      --radius: 14px;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg: #0b1220;
+        --card:#0f172a;
+        --text:#e5e7eb;
+        --muted:#94a3b8;
+        --primary:#3b82f6;
+        --primary-600:#2563eb;
+        --success:#22c55e;
+        --danger:#ef4444;
+        --ring: rgba(59,130,246,.35);
+        --shadow: 0 12px 40px rgba(0,0,0,.35);
+      }
+    }
 
-        }
-        .notif_user{
-            display: grid;
-            grid-template-columns: 65px 2fr 1fr;
-            height: fit-content;
-            padding: 5px;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 10px;
-            margin-top: 20px;
-            padding: 10px ;
-            background-color: #f0f2f5;
-            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+    *{ box-sizing: border-box }
+    html,body{ height:100% }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color: var(--text);
+      background: radial-gradient(1000px 800px at 10% -10%, #e2e8f0 0%, transparent 40%) no-repeat,
+                  radial-gradient(1000px 800px at 110% 0%, #e0e7ff 0%, transparent 40%) no-repeat,
+                  var(--bg);
+      background-attachment: fixed;
+      line-height: 1.45;
+    }
 
-        }
-        .zone-notif h1{
-            text-align: center;
-        }
-        .notif_user img{
-            height: 55px;
-            width: 55px;
-            border-radius: 50%;
-        }
+    /* Layout */
+    .page{
+      display:flex;
+      flex-direction: column;
+      min-height:100dvh;
+    }
+    .container{
+      width: min(1100px, 92vw);
+      margin: 72px auto 48px;
+    }
 
-        .notif_user .info_action{
-            text-align: center;
-            height: fit-content;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .notif_user .info_action .action{
-            display: grid;
-            grid-template-columns: repeat(2,1fr);
-            grid-gap: 5px;
-        }
-        .notif_user .info_action .action :first-child{
-            padding: 5px;
-            background-color: green;
-            border-radius: 5px;
-            border: none;
-        }
-        .notif_user .info_action .action :last-child{
-            padding: 5px;
-            background-color: red;
-            border-radius: 5px;
-            border: none;
-        }
-        .info_action{
-            align-self: flex-end;
-            margin-bottom: 15px;
-        }
-    </style>
+    /* Header local */
+    .page-title{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      margin: 8px 0 18px;
+    }
+    .page-title h1{
+      font-size: clamp(1.25rem, 1.1rem + 1vw, 1.75rem);
+      margin:0;
+      letter-spacing:.2px;
+    }
+    .subtitle{
+      color: var(--muted);
+      margin: 0 0 22px 0;
+      font-size: .975rem;
+    }
 
+    /* Card liste */
+    .notif-list{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 16px;
+    }
+
+    .notif-card{
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(15, 23, 42, .06);
+      padding: 14px;
+      display:grid;
+      grid-template-columns: 56px 1fr;
+      grid-template-areas:
+        "avatar content"
+        "avatar actions";
+      column-gap: 14px;
+      row-gap: 10px;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .notif-card:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 14px 40px rgba(2, 6, 23, .12);
+      border-color: rgba(37, 99, 235, .18);
+    }
+
+    .avatar{
+      grid-area: avatar;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(37,99,235,.18);
+      background:#e2e8f0;
+    }
+
+    .content{
+      grid-area: content;
+      display:flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width:0;
+    }
+    .content .date{
+      font-size: .85rem;
+      color: var(--muted);
+    }
+    .content .text{
+      font-weight: 600;
+      font-size: .98rem;
+    }
+
+    .actions{
+      grid-area: actions;
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      align-self: start;
+    }
+
+    /* Boutons */
+    .btn{
+      appearance: none;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-weight: 600;
+      font-size: .95rem;
+      cursor: pointer;
+      transition: transform .08s ease, box-shadow .18s ease, background-color .2s ease, color .2s ease, opacity .2s ease;
+      outline: none;
+    }
+    .btn:active{ transform: translateY(1px) }
+    .btn:focus-visible{
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    .btn-primary{
+      background: linear-gradient(180deg, var(--primary), var(--primary-600));
+      color: #fff;
+    }
+    .btn-primary:hover{ filter: brightness(1.05) }
+
+    .btn-success{
+      background: linear-gradient(180deg, var(--success), #15803d);
+      color: #fff;
+    }
+    .btn-success:hover{ filter: brightness(1.05) }
+
+    .btn-danger{
+      background: linear-gradient(180deg, var(--danger), #b91c1c);
+      color: #fff;
+    }
+    .btn-danger:hover{ filter: brightness(1.03) }
+
+    .btn-ghost{
+      background: rgba(15, 23, 42, .05);
+      color: var(--text);
+    }
+    @media (prefers-color-scheme: dark){
+      .btn-ghost{ background: rgba(255,255,255,.06) }
+    }
+    .btn-ghost:hover{ background: rgba(2,6,23,.12) }
+
+    /* Barre sticky optionnelle (si besoin) */
+    .toolbar{
+      position: sticky;
+      top: 64px; /* laisse passer ton header */
+      z-index: 10;
+      background: color-mix(in lab, var(--card) 88%, transparent);
+      backdrop-filter: saturate(1.2) blur(8px);
+      border: 1px solid rgba(15,23,42,.06);
+      box-shadow: var(--shadow);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .chip{
+      border: 1px solid rgba(15,23,42,.12);
+      background: var(--card);
+      color: var(--muted);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .chip.active{
+      color: #fff;
+      background: var(--primary);
+      border-color: transparent;
+    }
+
+    /* Utilitaires */
+    .visually-hidden{
+      position: absolute !important;
+      height: 1px; width: 1px;
+      overflow: hidden;
+      clip: rect(1px, 1px, 1px, 1px);
+      white-space: nowrap;
+    }
+  </style>
 </head>
 <body>
-    <%- include('./partials/header') %>
+  <%- include('./partials/header') %>
 
-    <div class="page-notif">
+  <div class="page">
+    <main class="container">
 
-        <div>
-    
-        </div>
-        <div class="zone-notif">
-            <h1>Mes Notifications</h1>
-            <% user.Envoi.forEach(notif => { %>
+      <div class="page-title" aria-live="polite">
+        <h1>Mes notifications</h1>
+      </div>
+      <p class="subtitle">Gère tes demandes d’amis en un clin d’œil.</p>
 
-            <div class="notif_user">
-                <img src="../static/profil/<%= notif.User.Profil.urlPhoto %>" alt="">
-                <% if (notif.contenu == 1) {%>
-                <div>
-                    <p class="data-createdAt" data-createdAt="<%= notif.createdAt %>">                     
-                    </p>
-                    <p>Demande reçue de  <%= notif.User.prenom %> <%= notif.User.nom %></p>
+      <!-- Filtres (optionnels). Garde la classe .toolbar si tu veux les animer plus tard -->
+      <!--
+      <div class="toolbar" id="toolbar">
+        <button class="chip active" data-filter="all">Toutes</button>
+        <button class="chip" data-filter="received">Reçues</button>
+        <button class="chip" data-filter="sent">Envoyées</button>
+      </div>
+      -->
 
-                </div>
-                <div class="info_action">
-                    <div class="action"data-notifId="<%= notif.id %>">
-                        <button class="accept" data-senderId="<%= notif.senderId %>" data-userId="<%= notif.userId %>">Accepter</button>
-                        <button class="decline" >Refuser</button>
-                    </div>
-                </div>
-                <% } else if(notif.contenu == 0){ %>
-                    <div>
-                        <p class="data-createdAt" data-createdAt="<%= notif.createdAt %>">                     
-                        </p>
-                        <p>Demande envoyé à  <%= notif.User.prenom %> <%= notif.User.nom %></p>
+      <section class="notif-list" aria-label="Liste des notifications">
+        <% user.Envoi.forEach(notif => { %>
+          <article class="notif-card" data-notif-id="<%= notif.id %>">
+            <img class="avatar" src="../static/profil/<%= notif.User.Profil.urlPhoto %>" alt="Photo de <%= notif.User.prenom %> <%= notif.User.nom %>">
 
-                    </div>
-                    <div class="info_action">
-                        <div class="action">
-                            <button data-notifId ="<%= notif.id %>" class="annuler_demande" >Annuler </button>
-                            <button data-notifId ="<%= notif.id %>" class="supp">Supprimer</button>
-                        </div>
-                    </div>
-                    <% } %>
+            <div class="content">
+              <p class="date data-createdAt" data-createdAt="<%= notif.createdAt %>"></p>
+
+              <% if (notif.contenu == 1) { %>
+                <p class="text">Demande reçue de <%= notif.User.prenom %> <%= notif.User.nom %></p>
+              <% } else { %>
+                <p class="text">Demande envoyée à <%= notif.User.prenom %> <%= notif.User.nom %></p>
+              <% } %>
             </div>
 
-            <%
-        });
-        %> 
+            <div class="actions" data-notifId="<%= notif.id %>">
+              <% if (notif.contenu == 1) { %>
+                <button class="btn btn-success accept" data-senderId="<%= notif.senderId %>" data-userId="<%= notif.userId %>">
+                  Accepter
+                </button>
+                <button class="btn btn-danger decline">
+                  Refuser
+                </button>
+              <% } else { %>
+                <button class="btn btn-ghost annuler_demande" data-notifId ="<%= notif.id %>">
+                  Annuler
+                </button>
+                <button class="btn btn-danger supp" data-notifId ="<%= notif.id %>">
+                  Supprimer
+                </button>
+              <% } %>
+            </div>
+          </article>
+        <% }) %>
+      </section>
 
-        </div>
-        <div>
-    
-        </div>
-    </div>
-    <script>
-        // Gestion du bouton pour accepter une demande d'ami
-        document.querySelectorAll('.accept').forEach(acc =>{
-            acc.addEventListener('click',async ()=>{
-                const response = await fetch('/friend',{
-                    method : 'POST',
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body : JSON.stringify({friendId : acc.getAttribute('data-senderId'),userId : decode().userId})
-                })
-                const result = await response.json()
-                if(result.friend){
+    </main>
+  </div>
 
-                    const parent = acc.parentElement
-                    const parent1 = parent.parentElement
-                    parent1.parentElement.style.display = 'none'
-                    alert('Demande d\'amis accepté avec succès')
-                    const response = await fetch(`/notif/${acc.parentElement.getAttribute('data-notifId')}?all=true`,{
-                    method : 'DELETE'
-                })
-                }
+  <script>
+    // -------- Helpers
+    const $ = (sel, ctx=document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
 
-            })
-        })
-        // Gestion du bouton pour Refuser une demande d'amie
-        document.querySelectorAll('.decline').forEach(dec =>{
-            dec.addEventListener('click',async ()=>{
-                const response = await fetch(`/notif/${dec.parentElement.getAttribute('data-notifId')}`,{
-                    method : 'DELETE'
-                })
-                const result =await response.json()
-                console.log(result)
-                if(result.delete){
+    // -------- Affichage de la date (FR)
+    $$('.data-createdAt').forEach(el => {
+      const raw = el.getAttribute('data-createdAt');
+      const d = new Date(raw);
+      el.textContent = d.toLocaleString('fr-FR', {
+        day:'2-digit',
+        month:'long',
+        year:'numeric',
+        hour:'2-digit',
+        minute:'2-digit'
+      });
+    });
 
-                    const parent = dec.parentElement
-                    const parent1 = parent.parentElement
-                    parent1.parentElement.style.display = 'none'
-                }
-            })
-        })
+    // -------- Actions
+    // Accepter
+    $$('.accept').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        const notifWrap = btn.closest('.actions');
+        const notifId = notifWrap.getAttribute('data-notifId');
 
-        document.querySelectorAll('.supp').forEach(sp =>{
-            sp.addEventListener('click',async ()=>{
-                // location.reload()
-                alert('bouton cliqué')
-                const response = await fetch(`/notif/${sp.getAttribute('data-notifId')}`,{
-                    method : 'DELETE'
-                })
-                const result =await response.json()
-                console.log(result)
-                if(result.delete){
+        try{
+          const res = await fetch('/friend', {
+            method:'POST',
+            headers: { 'Content-Type':'application/json' },
+            body: JSON.stringify({ friendId: btn.getAttribute('data-senderId'), userId: decode().userId })
+          });
+          const data = await res.json();
+          if(data.friend){
+            // Supprime la carte
+            const card = btn.closest('.notif-card');
+            card?.parentElement?.removeChild(card);
+            // Nettoie la notif
+            await fetch(`/notif/${notifId}?all=true`, { method:'DELETE' });
+            alert("Demande d'amis acceptée avec succès");
+          }
+        } catch(e){
+          console.error(e);
+          btn.disabled = false;
+        }
+      });
+    });
 
-                    const parent = sp.parentElement
-                    const parent1 = parent.parentElement
-                    parent1.parentElement.style.display = 'none'
-                }
-            })
-        })
-        // Gestion de l'annulation d'une demande d'amie
-        document.querySelectorAll('.annuler_demande').forEach(element => {
-            element.addEventListener('click',async()=>{
-                const response = await fetch(`/notif/${element.getAttribute('data-notifId')}?all=true`,{
-                    method : 'DELETE'
-                })
-                const result =await response.json()
-                console.log(result)
-                if(result.delete){
+    // Refuser
+    $$('.decline').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        const notifId = btn.closest('.actions').getAttribute('data-notifId');
+        try{
+          const res = await fetch(`/notif/${notifId}`, { method:'DELETE' });
+          const data = await res.json();
+          if(data.delete){
+            const card = btn.closest('.notif-card');
+            card?.parentElement?.removeChild(card);
+          }
+        } catch(e){
+          console.error(e);
+          btn.disabled = false;
+        }
+      });
+    });
 
-                    const parent = element.parentElement
-                    const parent1 = parent.parentElement
-                    parent1.parentElement.style.display = 'none'
-                }
-            })
-        });
+    // Annuler (pour les demandes envoyées)
+    $$('.annuler_demande').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try{
+          const res = await fetch(`/notif/${btn.getAttribute('data-notifId')}?all=true`, { method:'DELETE' });
+          const data = await res.json();
+          if(data.delete){
+            const card = btn.closest('.notif-card');
+            card?.parentElement?.removeChild(card);
+          }
+        } catch(e){
+          console.error(e);
+          btn.disabled = false;
+        }
+      });
+    });
 
-        // Gestion de l'affichage de la date de Reception et d'Envoi de chaque notification
-        const createdAtElements = document.querySelectorAll('.data-createdAt');
-        createdAtElements.forEach(element => {
-            const elementDate = element.getAttribute('data-createdAt');
-            const date = new Date(elementDate);
-            element.textContent = date.toLocaleString('fr-FR', {
-                // weekday: 'long',
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        });
-
-
-
-    </script>
+    // Supprimer
+    $$('.supp').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try{
+          const res = await fetch(`/notif/${btn.getAttribute('data-notifId')}`, { method:'DELETE' });
+          const data = await res.json();
+          if(data.delete){
+            const card = btn.closest('.notif-card');
+            card?.parentElement?.removeChild(card);
+          }
+        } catch(e){
+          console.error(e);
+          btn.disabled = false;
+        }
+      });
+    });
+  </script>
 </body>
 </html>

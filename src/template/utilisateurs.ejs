@@ -1,337 +1,814 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Utilisateurs</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f0f2f5;
-            margin: 0;
-            font-size: 15px;
+            min-height: 100vh;
+            color: #333;
+            padding-top: 60px; /* Space for fixed header */
         }
-        section {
-            margin-top: 70px;
-            padding: 0 2vw;
-        }
-        section h1 {
-            text-align: left;
-            font-size: 1.5em;
-            color: #1877f2;
-            margin: 32px 0 18px 0;
-            letter-spacing: 1px;
-        }
-        .friend-section {
-            display: flex;
-            justify-content: center;
-        }
-        #friend {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 28px;
-            width: 100%;
-        }
-        .friend-user {
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
             background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(24,119,242,0.08);
-            overflow: hidden;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Navigation */
+        .nav-tabs {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: box-shadow 0.2s;
-            min-width: 0;
-        }
-        .friend-user:hover {
-            box-shadow: 0 8px 32px rgba(24,119,242,0.13);
-            transform: translateY(-2px) scale(1.02);
-        }
-        .friend-user img {
-            width: 100%;
-            max-width: 120px;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin-top: 22px;
-            border: 3px solid #1877f2;
-            background: #f0f2f5;
-        }
-        .bouton {
-            width: 100%;
-            padding: 18px 16px 12px 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-        .bouton p {
-            font-weight: 600;
-            color: #222;
+            background: #fff;
+            padding: 12px;
             margin: 0;
-            font-size: 1.1em;
-            text-align: center;
-        }
-        .action {
+            position: sticky;
+            top: 60px;
+            z-index: 999;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             width: 100%;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
+            justify-content: space-between;
         }
-        .action button {
-            flex: 1;
-            padding: 8px 0;
-            border-radius: 8px;
+
+        .nav-tab {
+            flex: 1 1 auto;
+            padding: 12px 20px;
             border: none;
-            background: #e4e6eb;
+            background: transparent;
             color: #1877f2;
-            font-weight: 500;
-            font-size: 1em;
+            font-weight: 600;
+            font-size: 16px;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
+            margin: 0 5px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            text-align: center;
         }
-        .action button:hover {
-            background: #1877f2;
-            color: #fff;
-        }
-        .action .acc_demande {
-            background: #42b72a;
-            color: #fff;
-        }
-        .action .acc_demande:hover {
-            background: #36a420;
-        }
-        .action .ref_demande, .action .supp {
-            background: #f02849;
-            color: #fff;
-        }
-        .action .ref_demande:hover, .action .supp:hover {
-            background: #c82333;
-        }
-        .action .voir_profil {
-            background: #e4e6eb;
+
+        .nav-tab.active {
+            background: #e7f3ff;
             color: #1877f2;
         }
-        .action .voir_profil:hover {
-            background: #1877f2;
-            color: #fff;
+
+        .nav-tab:hover:not(.active) {
+            background: #f2f2f2;
         }
-        .action .ajout_ami {
-            background: #1877f2;
-            color: #fff;
+
+        /* Section de contenu */
+        .content-section {
+            padding: 20px;
+            margin-top: 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .action .ajout_ami:hover {
-            background: #145db2;
+
+        /* Grille des utilisateurs */
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
         }
-        .status {
-            background: #42b72a;
-            color: #fff;
-            border-radius: 6px;
-            padding: 4px 0;
-            width: 100%;
-            text-align: center;
-            font-size: 0.95em;
-            margin-top: 8px;
-        }
-        @media (max-width: 900px) {
-            section {
-                margin-top: 56px;
-                padding: 0 1vw;
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 50px;
             }
-            #friend {
-                gap: 18px;
+
+            .nav-tabs {
+                top: 50px;
+                padding: 8px;
             }
-            .friend-user img {
-                max-width: 90px;
-                height: 90px;
+
+            .nav-tab {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+
+            .content-section {
+                padding: 16px;
                 margin-top: 16px;
             }
-            .bouton {
-                padding: 12px 8px 8px 8px;
+
+            .users-grid {
+                gap: 16px;
             }
         }
-        @media (max-width: 600px) {
-            section {
-                margin-top: 48px;
-                padding: 0 2vw;
+
+        /* Carte utilisateur */
+        .user-card { 
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1877f2, #42b72a, #f02849);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(31, 38, 135, 0.3);
+        }
+
+        .user-card:hover::before {
+            opacity: 1;
+        }
+
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #1877f2;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .user-card:hover .user-avatar {
+            border-color: #42b72a;
+            transform: scale(1.05);
+        }
+
+        .user-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+
+        /* Boutons d'action */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #1877f2, #145db2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #145db2, #0d47a1);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #42b72a, #36a420);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(45deg, #36a420, #2d8a1a);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f02849, #c82333);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #c82333, #a71e2a);
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ff9500, #ff6b00);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(45deg, #ff6b00, #e65100);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #e4e6eb, #d8dadf);
+            color: #1877f2;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, #1877f2, #145db2);
+            color: white;
+        }
+
+        /* Système de notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 400px;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast.hide {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .toast.success .toast-icon {
+            background: linear-gradient(45deg, #42b72a, #36a420);
+            color: white;
+        }
+
+        .toast.error .toast-icon {
+            background: linear-gradient(45deg, #f02849, #c82333);
+            color: white;
+        }
+
+        .toast.warning .toast-icon {
+            background: linear-gradient(45deg, #ff9500, #ff6b00);
+            color: white;
+        }
+
+        .toast.info .toast-icon {
+            background: linear-gradient(45deg, #1877f2, #145db2);
+            color: white;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 2px;
+            color: #1a1a1a;
+        }
+
+        .toast-message {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .toast-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
             }
-            #friend {
+
+            .nav-tabs {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .nav-tab {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+
+            .users-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 15px;
+            }
+
+            .user-card {
+                padding: 20px;
+            }
+
+            .user-avatar {
+                width: 80px;
+                height: 80px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .toast-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+            }
+
+            .toast {
+                min-width: auto;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .users-grid {
                 grid-template-columns: 1fr;
-                gap: 14px;
             }
-            .friend-user img {
-                max-width: 70px;
+
+            .user-card {
+                padding: 15px;
+            }
+
+            .user-avatar {
+                width: 70px;
                 height: 70px;
-                margin-top: 10px;
             }
-            .bouton {
-                padding: 8px 4px 6px 4px;
+
+            .user-name {
+                font-size: 16px;
             }
-            section h1 {
-                font-size: 1.15em;
-                margin: 18px 0 10px 0;
-            }
+        }
+
+        /* État vide */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
     <%- include('./partials/header') %>
 
-    <div class="friend-section">
-        <div></div>
-        <section>
-            <h1>Amis</h1>
-            <div id="friend">
-                <% if (amis) { %>
-                <% amis.forEach(user => { %>
-                    <div class="friend-user">
-                        <img src="/static/profil/<%= user.Profil.urlPhoto %>" alt="">
-                        <div class="bouton">
-                            <p><%= user.prenom %> <%= user.nom %></p>
-                            <div class="action">
+    <!-- Container pour les notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="container">
+        <!-- Navigation -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-section="amis">👥 Amis</button>
+            <button class="nav-tab" data-section="attente">⏳ Demandes en attente</button>
+            <button class="nav-tab" data-section="suggestion">💡 Suggestions</button>
+        </div>
+
+        <!-- Section Amis -->
+        <div id="section-amis" class="content-section active">
+            <div class="users-grid">
+                <% if (amis && amis.length > 0) { %>
+                    <% amis.forEach(user => { %>
+                        <div class="user-card">
+                            <img src="/static/profil/<%= user.Profil.urlPhoto %>" alt="<%= user.prenom %> <%= user.nom %>" class="user-avatar">
+                            <div class="user-name"><%= user.prenom %> <%= user.nom %></div>
+                            <div class="action-buttons">
                                 <% if (user.Reception) { %>
-                                    <button class="acc_demande" data-friendId="<%= user.id %>">Valider Demande</button>
-                                    <button class="ref_demande">Refuser</button>
+                                    <button class="btn btn-success acc_demande" data-friendId="<%= user.id %>" data-notifId="<%= user.Reception %>">✅ Accepter</button>
+                                    <button class="btn btn-danger ref_demande" data-notifId="<%= user.Reception %>">❌ Refuser</button>
                                 <% } else if(user.Envoi) { %>
-                                    <button class="ann_demande" data-friendId="<%= user.id %>">Annuler demande</button>
-                                    <button class="supp">Supprimer</button>
+                                    <button class="btn btn-warning ann_demande" data-friendId="<%= user.id %>" data-notifId="<%= user.Envoi %>">🔄 Annuler</button>
+                                    <button class="btn btn-danger supp">🗑️ Supprimer</button>
                                 <% } else if(user.Friends) { %>
-                                    <button class="voir_profil" data-friendId="<%= user.id %>">Voir Profil</button>
-                                    <button class="supp">Supprimer</button>
+                                    <button class="btn btn-secondary voir_profil" data-friendId="<%= user.id %>">👤 Profil</button>
+                                    <button class="btn btn-danger supp">🗑️ Supprimer</button>
                                 <% } else { %>
-                                    <button class="ajout_ami" data-friendId="<%= user.id %>">Ajouter Ami(e)</button>
-                                    <button class="voir_profil">Voir Profil</button>
+                                    <button class="btn btn-primary ajout_ami" data-friendId="<%= user.id %>">➕ Ajouter</button>
+                                    <button class="btn btn-secondary voir_profil">👤 Profil</button>
                                 <% } %>
                             </div>
                         </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="empty-state">
+                        <h3>Aucun ami trouvé</h3>
+                        <p>Commencez à ajouter des amis pour voir vos connexions ici.</p>
                     </div>
-                <% }); %>
                 <% } %>
             </div>
-            <h1>Demande En Attente</h1>
-            <div id="friend">
-                <% if (attentes) { %>
-                <% attentes.forEach(user => { %>
-                    <div class="friend-user">
-                        <img src="/static/profil/<%= user.Profil.urlPhoto %>" alt="">
-                        <div class="bouton">
-                            <p><%= user.prenom %> <%= user.nom %></p>
-                            <div class="action">
+        </div>
+
+        <!-- Section Demandes en attente -->
+        <div id="section-attente" class="content-section">
+            <div class="users-grid">
+                <% if (attentes && attentes.length > 0) { %>
+                    <% attentes.forEach(user => { %>
+                        <div class="user-card">
+                            <img src="/static/profil/<%= user.Profil.urlPhoto %>" alt="<%= user.prenom %> <%= user.nom %>" class="user-avatar">
+                            <div class="user-name"><%= user.prenom %> <%= user.nom %></div>
+                            <div class="action-buttons">
                                 <% if (user.Reception) { %>
-                                    <button class="acc_demande" data-friendId="<%= user.id %>" data-notifId="<%= user.Reception %>">Accepter</button>
-                                    <button class="ref_demande" data-notifId="<%= user.Reception %>">Refuser</button>
+                                    <button class="btn btn-success acc_demande" data-friendId="<%= user.id %>" data-notifId="<%= user.Reception %>">✅ Accepter</button>
+                                    <button class="btn btn-danger ref_demande" data-notifId="<%= user.Reception %>">❌ Refuser</button>
                                 <% } else if(user.Envoi) { %>
-                                    <button class="supp">Voir Profil</button>
-                                    <button class="ann_demande" data-notifId="<%= user.Envoi %>" data-friendId="<%= user.id %>">Annuler</button>
+                                    <button class="btn btn-secondary voir_profil">👤 Profil</button>
+                                    <button class="btn btn-warning ann_demande" data-notifId="<%= user.Envoi %>" data-friendId="<%= user.id %>">🔄 Annuler</button>
                                 <% } else if(user.Friends) { %>
-                                    <button class="voir_profil" data-friendId="<%= user.id %>">Voir Profil</button>
-                                    <button class="supp">Supprimer</button>
+                                    <button class="btn btn-secondary voir_profil" data-friendId="<%= user.id %>">👤 Profil</button>
+                                    <button class="btn btn-danger supp">🗑️ Supprimer</button>
                                 <% } else { %>
-                                    <button class="ajout_ami" data-friendId="<%= user.id %>">Ajouter Ami(e)</button>
-                                    <button class="voir_profil">Voir Profil</button>
+                                    <button class="btn btn-primary ajout_ami" data-friendId="<%= user.id %>">➕ Ajouter</button>
+                                    <button class="btn btn-secondary voir_profil">👤 Profil</button>
                                 <% } %>
                             </div>
                         </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="empty-state">
+                        <h3>Aucune demande en attente</h3>
+                        <p>Vous n'avez aucune demande d'ami en attente pour le moment.</p>
                     </div>
-                <% }); %>
                 <% } %>
             </div>
-            <h1>Suggestions</h1>
-            <div id="friend">
-                <% if (suggestions) { %>
-                <% suggestions.forEach(user => { %>
-                    <div class="friend-user">
-                        <img src="/static/profil/<%= user.Profil.urlPhoto %>" alt="">
-                        <div class="bouton">
-                            <p><%= user.prenom %> <%= user.nom %></p>
-                            <div class="action">
+        </div>
+
+        <!-- Section Suggestions -->
+        <div id="section-suggestion" class="content-section">
+            <div class="users-grid">
+                <% if (suggestions && suggestions.length > 0) { %>
+                    <% suggestions.forEach(user => { %>
+                        <div class="user-card">
+                            <img src="/static/profil/<%= user.Profil.urlPhoto %>" alt="<%= user.prenom %> <%= user.nom %>" class="user-avatar">
+                            <div class="user-name"><%= user.prenom %> <%= user.nom %></div>
+                            <div class="action-buttons">
                                 <% if (user.Reception) { %>
-                                    <button class="acc_demande" data-friendId="<%= user.id %>" data-notifId="<%= user.Reception.id %>">Valider Demande</button>
-                                    <button class="ref_demande" data-notifId="<%= user.Reception.id %>">Refuser</button>
+                                    <button class="btn btn-success acc_demande" data-friendId="<%= user.id %>" data-notifId="<%= user.Reception.id %>">✅ Accepter</button>
+                                    <button class="btn btn-danger ref_demande" data-notifId="<%= user.Reception.id %>">❌ Refuser</button>
                                 <% } else if(user.Envoi) { %>
-                                    <button class="ann_demande" data-friendId="<%= user.id %>">Annuler demande</button>
-                                    <button class="supp">Supprimer</button>
+                                    <button class="btn btn-warning ann_demande" data-friendId="<%= user.id %>" data-notifId="<%= user.Envoi %>">🔄 Annuler</button>
+                                    <button class="btn btn-danger supp">🗑️ Supprimer</button>
                                 <% } else if(user.Friends) { %>
-                                    <button class="voir_profil" data-friendId="<%= user.id %>">Voir Profil</button>
-                                    <button class="supp">Supprimer</button>
+                                    <button class="btn btn-secondary voir_profil" data-friendId="<%= user.id %>">👤 Profil</button>
+                                    <button class="btn btn-danger supp">🗑️ Supprimer</button>
                                 <% } else { %>
-                                    <button class="ajout_ami" data-friendId="<%= user.id %>">Ajouter Ami(e)</button>
-                                    <button class="voir_profil">Voir Profil</button>
+                                    <button class="btn btn-primary ajout_ami" data-friendId="<%= user.id %>">➕ Ajouter</button>
+                                    <button class="btn btn-secondary voir_profil">👤 Profil</button>
                                 <% } %>
                             </div>
                         </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="empty-state">
+                        <h3>Aucune suggestion</h3>
+                        <p>Nous n'avons pas de suggestions d'amis pour vous pour le moment.</p>
                     </div>
-                <% }); %>
                 <% } %>
             </div>
-        </section>
-        <div></div>
+        </div>
     </div>
-        
+
     <script>
-        // Gestion du bouton Ajouter Ami(e)
-        document.querySelectorAll('.ajout_ami').forEach(acc => {
-            acc.addEventListener('click', async () => {
-                const response = await fetch('/notif?demande=true', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ userID: acc.getAttribute('data-friendId'), senderId: decode().userId })
-                });
-                if (response.ok) {
-                    alert('Demande envoyée avec succès');
+        // Système de notifications
+        class ToastNotification {
+            constructor() {
+                this.container = document.getElementById('toastContainer');
+            }
+
+            show(type, title, message, duration = 4000) {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                const icon = this.getIcon(type);
+                
+                toast.innerHTML = `
+                    <div class="toast-icon">${icon}</div>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        <div class="toast-message">${message}</div>
+                    </div>
+                    <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+                `;
+
+                this.container.appendChild(toast); 
+                
+
+                // Animation d'entrée
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 10);
+
+                // Auto-suppression
+                if (duration > 0) {
+                    setTimeout(() => {
+                        this.hide(toast);
+                    }, duration);
+                }
+
+                return toast;
+            }
+
+            hide(toast) {
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                }, 300);
+            }
+
+            getIcon(type) {
+                const icons = {
+                    success: '✅',
+                    error: '❌',
+                    warning: '⚠️',
+                    info: 'ℹ️'
+                };
+                return icons[type] || 'ℹ️';
+            }
+
+            success(title, message, duration) {
+                return this.show('success', title, message, duration);
+            }
+
+            error(title, message, duration) {
+                return this.show('error', title, message, duration);
+            }
+
+            warning(title, message, duration) {
+                return this.show('warning', title, message, duration);
+            }
+
+            info(title, message, duration) {
+                return this.show('info', title, message, duration);
+            }
+        }
+
+        // Instance globale des notifications
+        const toast = new ToastNotification();
+
+        // Fonction pour décoder le token JWT (à adapter selon votre implémentation)
+        function decode() {
+            try {
+                // Récupérer le token depuis localStorage ou sessionStorage
+                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+                if (!token) {
+                    console.error('Token non trouvé');
+                    return { userId: null };
+                }
+                
+                // Décoder le token (exemple simple)
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                return { userId: payload.userId || payload.id };
+            } catch (error) {
+                console.error('Erreur lors du décodage du token:', error);
+                return { userId: null };
+            }
+        }
+
+        // Navigation
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        navTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Retirer la classe active de tous les onglets et sections
+                navTabs.forEach(t => t.classList.remove('active'));
+                contentSections.forEach(s => s.classList.remove('active'));
+
+                // Ajouter la classe active à l'onglet cliqué
+                tab.classList.add('active');
+
+                // Afficher la section correspondante
+                const sectionId = `section-${tab.dataset.section}`;
+                const targetSection = document.getElementById(sectionId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
                 }
             });
         });
-        // Gestion du bouton Refuser
-        document.querySelectorAll('.ref_demande').forEach(element => {
-            element.addEventListener('click', async () => {
-                const response = await fetch(`/notif/${element.getAttribute('data-notifId')}`, {
-                    method: 'DELETE'
-                });
-                const result = await response.json();
-                if (result.delete) {
-                    const parent = element.parentElement;
-                    const parent1 = parent.parentElement;
-                    parent1.parentElement.style.display = 'none';
+
+        // Gestion des boutons
+        document.querySelectorAll('.ajout_ami').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                try {
+                    const userId = decode().userId;
+                    if (!userId) {
+                        toast.error('Erreur', 'Utilisateur non connecté');
+                        return;
+                    }
+
+                    const response = await fetch('/notif?demande=true', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            userID: btn.getAttribute('data-friendId'), 
+                            senderId: userId 
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        toast.success('Succès', 'Demande envoyée avec succès');
+                        btn.textContent = '✅ Demande envoyée';
+                        btn.disabled = true;
+                    } else {
+                        toast.error('Erreur', 'Erreur lors de l\'envoi de la demande');
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    toast.error('Erreur', 'Erreur lors de l\'envoi de la demande');
                 }
             });
         });
-        // Gestion du bouton Accepter
-        document.querySelectorAll('.acc_demande').forEach(element => {
-            element.addEventListener('click', async () => {
-                const response = await fetch('/friend', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ friendId: element.getAttribute('data-friendId'), userId: decode().userId })
-                });
-                const result = await response.json();
-                if (result.friend) {
-                    const parent = element.parentElement;
-                    const parent1 = parent.parentElement;
-                    parent1.parentElement.style.display = 'none';
-                    alert('Demande d\'amis acceptée avec succès');
-                    await fetch(`/notif/${element.getAttribute('data-notifId')}?all=true`, {
+
+        document.querySelectorAll('.ref_demande').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                try {
+                    const notifId = btn.getAttribute('data-notifId');
+                    if (!notifId) {
+                        toast.error('Erreur', 'ID de notification manquant');
+                        return;
+                    }
+
+                    const response = await fetch(`/notif/${notifId}`, {
                         method: 'DELETE'
                     });
+                    const result = await response.json();
+                    if (result.delete) {
+                        btn.closest('.user-card').remove();
+                        toast.success('Succès', 'Demande refusée');
+                    } else {
+                        toast.error('Erreur', 'Erreur lors du refus de la demande');
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    toast.error('Erreur', 'Erreur lors du refus de la demande');
                 }
             });
         });
-        // Gestion du bouton Annuler
-        document.querySelectorAll('.ann_demande').forEach(element => {
-            element.addEventListener('click', async () => {
-                const response = await fetch(`/notif/${element.getAttribute('data-notifId')}?all=true`, {
-                    method: 'DELETE'
-                });
-                const result = await response.json();
-                if (result.delete) {
-                    location.reload();
-                    const parent = element.parentElement;
-                    const parent1 = parent.parentElement;
-                    parent1.parentElement.style.display = 'none';
+
+        document.querySelectorAll('.acc_demande').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                try {
+                    const userId = decode().userId;
+                    if (!userId) {
+                        toast.error('Erreur', 'Utilisateur non connecté');
+                        return;
+                    }
+
+                    const response = await fetch('/friend', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            friendId: btn.getAttribute('data-friendId'), 
+                            userId: userId 
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.friend) {
+                        btn.closest('.user-card').remove();
+                        toast.success('Succès', 'Demande d\'ami acceptée avec succès');
+                        
+                        // Supprimer la notification
+                        const notifId = btn.getAttribute('data-notifId');
+                        if (notifId) {
+                            await fetch(`/notif/${notifId}?all=true`, { method: 'DELETE' });
+                        }
+                    } else {
+                        toast.error('Erreur', 'Erreur lors de l\'acceptation de la demande');
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    toast.error('Erreur', 'Erreur lors de l\'acceptation de la demande');
+                }
+            });
+        });
+
+        document.querySelectorAll('.ann_demande').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                try {
+                    const notifId = btn.getAttribute('data-notifId');
+                    if (!notifId) {
+                        toast.error('Erreur', 'ID de notification manquant');
+                        return;
+                    }
+
+                    const response = await fetch(`/notif/${notifId}?all=true`, {
+                        method: 'DELETE'
+                    });
+                    const result = await response.json();
+                    if (result.delete) {
+                        location.reload();
+                    } else {
+                        toast.error('Erreur', 'Erreur lors de l\'annulation de la demande');
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    toast.error('Erreur', 'Erreur lors de l\'annulation de la demande');
+                }
+            });
+        });
+
+        // Gestion des boutons "Voir profil" et "Supprimer"
+        document.querySelectorAll('.voir_profil').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const friendId = btn.getAttribute('data-friendId');
+                if (friendId) {
+                    window.location.href = `/profil/${friendId}`;
+                } else {
+                    toast.error('Erreur', 'ID utilisateur manquant');
+                }
+            });
+        });
+
+        document.querySelectorAll('.supp').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (confirm('Êtes-vous sûr de vouloir supprimer cet ami ?')) {
+                    // Logique de suppression à implémenter
+                    toast.info('Info', 'Fonctionnalité de suppression à implémenter');
                 }
             });
         });

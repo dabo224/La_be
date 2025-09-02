@@ -1,781 +1,918 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Navbar Responsive - Facebook Style</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Navbar Responsive - Facebook Style</title>
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-    html {
-      font-size: clamp(14px, 1.2vw, 16px);
-    }
+      html {
+        font-size: clamp(14px, 1.2vw, 16px);
+      }
 
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+      }
 
-    /* Navbar principale */
-    nav {
-      display: grid;
-      grid-template-columns: minmax(200px, 1fr) minmax(300px, 2fr) minmax(100px, 1fr);
-      background-color: #ffffff;
-      position: sticky;
-      top: 0;
-      width: 100%;
-      height: 56px;
-      z-index: 1000;
-      border-bottom: 1px solid #dadde1;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      align-items: center;
-    }
-
-    /* Section gauche - Logo et recherche */
-    .info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 0 16px;
-      min-width: 0;
-    }
-
-    .logo-container {
-      flex-shrink: 0;
-    }
-
-    .info .logo-container img {
-      height: 32px;
-      width: auto;
-    }
-
-    .search-container {
-      position: relative;
-      flex: 1;
-      max-width: 320px;
-      min-width: 0;
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      height: 16px;
-      width: 16px;
-      opacity: 0.6;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .search-input {
-      width: 100%;
-      height: 40px;
-      border-radius: 50px;
-      border: none;
-      padding: 0 16px 0 40px;
-      background-color: #f0f2f5;
-      outline: none;
-      font-size: 15px;
-      transition: background-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .search-input:focus {
-      background-color: #ffffff;
-      box-shadow: 0 0 0 2px #1877f2;
-    }
-
-    .search-input::placeholder {
-      color: #65676b;
-    }
-
-    /* Section centrale - Navigation */
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 100%;
-      gap: 8px;
-      padding: 0 8px;
-    }
-
-    .nav-item {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 56px;
-      padding: 0 12px;
-      border-radius: 8px;
-      text-decoration: none;
-      transition: background-color 0.2s ease;
-      min-width: 48px;
-    }
-
-    .nav-item:hover {
-      background-color: #f0f2f5;
-    }
-
-    .nav-item img {
-      height: 24px;
-      width: 24px;
-      filter: brightness(0) saturate(100%) invert(42%) sepia(6%) saturate(558%) hue-rotate(202deg) brightness(92%) contrast(87%);
-      transition: filter 0.2s ease;
-    }
-
-    .nav-item.active {
-      position: relative;
-    }
-
-    .nav-item.active img {
-      filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(1583%) hue-rotate(214deg) brightness(104%) contrast(97%);
-    }
-
-    .nav-item.active::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background-color: #1877f2;
-      border-radius: 2px 2px 0 0;
-    }
-
-    /* Section droite - Options utilisateur */
-    .option {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      padding: 0 16px;
-      gap: 8px;
-    }
-
-    .profile-container {
-      position: relative;
-    }
-
-    .photo_profil {
-      height: 40px;
-      width: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: border-color 0.2s ease;
-    }
-
-    .photo_profil:hover {
-      border-color: #f0f2f5;
-    }
-
-    /* Menu mobile hamburger */
-    .mobile-menu-btn {
-      display: none;
-      background: none;
-      border: none;
-      padding: 8px;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    .mobile-menu-btn:hover {
-      background-color: #f0f2f5;
-    }
-
-    .hamburger {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .hamburger span {
-      display: block;
-      height: 2px;
-      width: 18px;
-      background-color: #1c1e21;
-      border-radius: 1px;
-      transition: all 0.3s ease;
-    }
-
-    /* Menu mobile overlay */
-    .mobile-overlay {
-      display: none;
-      position: fixed;
-      top: 56px;
-      left: 0;
-      width: 100%;
-      height: calc(100vh - 56px);
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 999;
-    }
-
-    .mobile-nav {
-      display: none;
-      position: fixed;
-      top: 56px;
-      left: 0;
-      width: 100%;
-      background-color: white;
-      border-bottom: 1px solid #dadde1;
-      z-index: 1000;
-      padding: 16px 0;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .mobile-nav-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-      gap: 8px;
-      padding: 0 16px;
-      max-width: 400px;
-      margin: 0 auto;
-    }
-
-    .mobile-nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 12px 8px;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #1c1e21;
-      transition: background-color 0.2s ease;
-      min-height: 70px;
-      justify-content: center;
-      gap: 4px;
-    }
-
-    .mobile-nav-item:hover {
-      background-color: #f0f2f5;
-    }
-
-    .mobile-nav-item img {
-      height: 24px;
-      width: 24px;
-      filter: brightness(0) saturate(100%) invert(42%) sepia(6%) saturate(558%) hue-rotate(202deg) brightness(92%) contrast(87%);
-    }
-
-    .mobile-nav-item.active img {
-      filter: brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(1583%) hue-rotate(214deg) brightness(104%) contrast(97%);
-    }
-
-    .mobile-nav-item span {
-      font-size: 12px;
-      font-weight: 500;
-      text-align: center;
-    }
-
-    .mobile-nav-item.active span {
-      color: #1877f2;
-    }
-
-    /* Responsive breakpoints */
-    
-    /* Tablettes */
-    @media screen and (max-width: 1024px) {
+      /* Navbar principale */
       nav {
-        grid-template-columns: minmax(150px, 1fr) minmax(250px, 2fr) minmax(100px, 1fr);
-      }
-
-      .nav {
-        gap: 4px;
-      }
-
-      .nav-item {
-        padding: 0 8px;
-        min-width: 44px;
-      }
-
-      .nav-item img {
-        height: 22px;
-        width: 22px;
-      }
-    }
-
-    /* Mobile large */
-    @media screen and (max-width: 768px) {
-      nav {
-        grid-template-columns: 1fr auto auto;
+        display: grid;
+        grid-template-columns: minmax(200px, 1fr) minmax(300px, 2fr) minmax(
+            100px,
+            1fr
+          );
+        background-color: #ffffff;
+        position: sticky;
+        top: 0;
+        width: 100%;
         height: 56px;
+        z-index: 1000;
+        border-bottom: 1px solid #dadde1;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        align-items: center;
       }
 
+      /* Section gauche - Logo et recherche */
       .info {
-        padding: 0 12px;
-        gap: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 16px;
+        min-width: 0;
       }
 
-      .search-container {
-        display: none;
-      }
-
-      .nav {
-        display: none;
-      }
-
-      .mobile-menu-btn {
-        display: block;
-      }
-
-      .option {
-        padding: 0 12px;
-      }
-
-      .mobile-overlay.active,
-      .mobile-nav.active {
-        display: block;
-      }
-
-      .hamburger.active span:nth-child(1) {
-        transform: rotate(45deg) translate(4px, 4px);
-      }
-
-      .hamburger.active span:nth-child(2) {
-        opacity: 0;
-      }
-
-      .hamburger.active span:nth-child(3) {
-        transform: rotate(-45deg) translate(4px, -4px);
-      }
-    }
-
-    /* Mobile petit */
-    @media screen and (max-width: 480px) {
-      nav {
-        height: 50px;
-        grid-template-columns: 1fr auto auto;
-      }
-
-      .mobile-nav {
-        top: 50px;
-      }
-
-      .mobile-overlay {
-        top: 50px;
-        height: calc(100vh - 50px);
+      .logo-container {
+        flex-shrink: 0;
       }
 
       .info .logo-container img {
-        height: 28px;
+        height: 32px;
+        width: auto;
       }
 
-      .photo_profil {
-        height: 36px;
-        width: 36px;
-      }
-
-      .mobile-nav-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 4px;
-        padding: 0 12px;
-      }
-
-      .mobile-nav-item {
-        padding: 10px 4px;
-        min-height: 65px;
-      }
-
-      .mobile-nav-item img {
-        height: 22px;
-        width: 22px;
-      }
-
-      .mobile-nav-item span {
-        font-size: 11px;
-      }
-    }
-
-    /* Mode sombre */
-    @media (prefers-color-scheme: dark) {
-      nav {
-        background-color: #242526;
-        border-bottom-color: #3e4042;
-      }
-
-      .search-input {
-        background-color: #3a3b3c;
-        color: #e4e6ea;
-      }
-
-      .search-input::placeholder {
-        color: #b0b3b8;
-      }
-
-      .search-input:focus {
-        background-color: #242526;
-      }
-
-      .nav-item:hover,
-      .mobile-nav-item:hover,
-      .mobile-menu-btn:hover {
-        background-color: #3a3b3c;
-      }
-
-      .mobile-nav {
-        background-color: #242526;
-        border-bottom-color: #3e4042;
-      }
-
-      .mobile-nav-item {
-        color: #e4e6ea;
-      }
-
-      .hamburger span {
-        background-color: #e4e6ea;
+      .search-container {
+        position: relative;
+        flex: 1;
+        max-width: 320px;
+        min-width: 0;
       }
 
       .search-icon {
-        filter: invert(1);
-        opacity: 0.8;
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 16px;
+        width: 16px;
+        opacity: 0.6;
+        pointer-events: none;
+        z-index: 1;
       }
-    }
 
-    /* Animations d'entrée */
-    .mobile-nav.active {
-      animation: slideDown 0.3s ease-out;
-    }
-
-    @keyframes slideDown {
-      from {
-        transform: translateY(-160px);
-        opacity: 0;
+      .search-input {
+        width: 100%;
+        height: 40px;
+        border-radius: 50px;
+        border: none;
+        padding: 0 16px 0 40px;
+        background-color: #f0f2f5;
+        outline: none;
+        font-size: 15px;
+        transition: background-color 0.2s ease, box-shadow 0.2s ease;
       }
-      to {
-        transform: translateY(0);
-        opacity: 1;
+
+      .search-input:focus {
+        background-color: #ffffff;
+        box-shadow: 0 0 0 2px #1877f2;
       }
-    }
 
-    /* Focus et accessibilité */
-    .nav-item:focus,
-    .mobile-nav-item:focus,
-    .search-input:focus,
-    .mobile-menu-btn:focus,
-    .photo_profil:focus {
-      outline: 2px solid #1877f2;
-      outline-offset: 2px;
-    }
+      .search-input::placeholder {
+        color: #65676b;
+      }
 
-    /* Optimisations touch */
-    @media (hover: none) and (pointer: coarse) {
-      .nav-item,
-      .mobile-nav-item,
+      /* Section centrale - Navigation */
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 100%;
+        gap: 8px;
+        padding: 0 8px;
+      }
+
+      .nav-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 56px;
+        padding: 0 12px;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+        min-width: 48px;
+      }
+
+      .nav-item:hover {
+        background-color: #f0f2f5;
+      }
+
+      .nav-item img {
+        height: 24px;
+        width: 24px;
+        filter: brightness(0) saturate(100%) invert(42%) sepia(6%)
+          saturate(558%) hue-rotate(202deg) brightness(92%) contrast(87%);
+        transition: filter 0.2s ease;
+      }
+
+      .nav-item.active {
+        position: relative;
+      }
+
+      .nav-item.active img {
+        filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
+          saturate(1583%) hue-rotate(214deg) brightness(104%) contrast(97%);
+      }
+
+      .nav-item.active::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background-color: #1877f2;
+        border-radius: 2px 2px 0 0;
+      }
+
+      /* Section droite - Options utilisateur */
+      .option {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 0 16px;
+        gap: 8px;
+      }
+
+      .profile-container {
+        position: relative;
+      }
+
+      .photo_profil {
+        height: 40px;
+        width: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: border-color 0.2s ease;
+      }
+
+      .photo_profil:hover {
+        border-color: #f0f2f5;
+      }
+
+      /* Menu mobile hamburger */
       .mobile-menu-btn {
-        min-height: 44px;
-        min-width: 44px;
+        display: none;
+        background: none;
+        border: none;
+        padding: 8px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
       }
-    }
-  </style>
-</head>
 
-<body>
-  <nav>
-    <!-- Section gauche - Logo et recherche -->
-    <div class="info">
-      <div class="logo-container">
-        <img src="/static/images/images/svg/logo-uiv.png" alt="Logo UnivLabe" />
-      </div>
-      <div class="search-container">
-        <img class="search-icon" src="/static/images/images/svg/search-svgrepo-com.svg" alt="" />
-        <input 
-          type="text" 
-          class="search-input"
-          placeholder="Rechercher sur univ-labe"
-          aria-label="Rechercher sur univ-labe"
-        />
-      </div>
-    </div>
+      .mobile-menu-btn:hover {
+        background-color: #f0f2f5;
+      }
 
-    <!-- Section centrale - Navigation desktop -->
-    <div class="nav">
-      <a href="/home" class="nav-item" aria-label="Accueil">
-        <img src="/static/images/images/svg/home-svgrepo-com.svg" alt="Accueil" />
-      </a>
-      <a href="/utilisateurs" class="nav-item utilisateurs-head" aria-label="Amis">
-        <img src="/static/images/images/svg/person-team-svgrepo-com.svg" alt="Amis" />
-      </a>
-      <a href="/notifs" id="notif" class="nav-item" aria-label="Notifications">
-        <img src="/static/images/images/svg/notifications-svgrepo-com.svg" alt="Notifications" />
-      </a>
-      <a href="/lost" class="nav-item" aria-label="Objets perdus">
-        <img src="/static/images/images/svg/lost-items-missing-svgrepo-com.svg" alt="Objets perdus" />
-      </a>
-      <a href="/event" class="nav-item" aria-label="Événements">
-        <img src="/static/images/images/svg/calendar-1195-svgrepo-com.svg" alt="Événements" />
-      </a>
-    </div>
+      .hamburger {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
 
-    <!-- Section droite - Menu mobile et profil -->
-    <div class="option">
-      <button class="mobile-menu-btn" aria-label="Menu de navigation" aria-expanded="false">
-        <div class="hamburger">
-          <span></span>
-          <span></span>
-          <span></span>
+      .hamburger span {
+        display: block;
+        height: 2px;
+        width: 18px;
+        background-color: #1c1e21;
+        border-radius: 1px;
+        transition: all 0.3s ease;
+      }
+
+      /* Menu mobile overlay */
+      .mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 56px;
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 56px);
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+
+      .mobile-nav {
+        display: none;
+        position: fixed;
+        top: 56px;
+        left: 0;
+        width: 100%;
+        background-color: white;
+        border-bottom: 1px solid #dadde1;
+        z-index: 1000;
+        padding: 16px 0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .mobile-nav-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 8px;
+        padding: 0 16px;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 12px 8px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #1c1e21;
+        transition: background-color 0.2s ease;
+        min-height: 70px;
+        justify-content: center;
+        gap: 4px;
+      }
+
+      .mobile-nav-item:hover {
+        background-color: #f0f2f5;
+      }
+
+      .mobile-nav-item img {
+        height: 24px;
+        width: 24px;
+        filter: brightness(0) saturate(100%) invert(42%) sepia(6%)
+          saturate(558%) hue-rotate(202deg) brightness(92%) contrast(87%);
+      }
+
+      .mobile-nav-item.active img {
+        filter: brightness(0) saturate(100%) invert(26%) sepia(89%)
+          saturate(1583%) hue-rotate(214deg) brightness(104%) contrast(97%);
+      }
+
+      .mobile-nav-item span {
+        font-size: 12px;
+        font-weight: 500;
+        text-align: center;
+      }
+
+      .mobile-nav-item.active span {
+        color: #1877f2;
+      }
+
+      /* Responsive breakpoints */
+
+      /* Tablettes */
+      @media screen and (max-width: 1024px) {
+        nav {
+          grid-template-columns: minmax(150px, 1fr) minmax(250px, 2fr) minmax(
+              100px,
+              1fr
+            );
+        }
+
+        .nav {
+          gap: 4px;
+        }
+
+        .nav-item {
+          padding: 0 8px;
+          min-width: 44px;
+        }
+
+        .nav-item img {
+          height: 22px;
+          width: 22px;
+        }
+      }
+
+      /* Mobile large */
+      @media screen and (max-width: 768px) {
+        nav {
+          grid-template-columns: 1fr auto auto;
+          height: 56px;
+        }
+
+        .info {
+          padding: 0 12px;
+          gap: 8px;
+        }
+
+        .search-container {
+          display: none;
+        }
+
+        .nav {
+          display: none;
+        }
+
+        .mobile-menu-btn {
+          display: block;
+        }
+
+        .option {
+          padding: 0 12px;
+        }
+
+        .mobile-overlay.active,
+        .mobile-nav.active {
+          display: block;
+        }
+
+        .hamburger.active span:nth-child(1) {
+          transform: rotate(45deg) translate(4px, 4px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+          opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+          transform: rotate(-45deg) translate(4px, -4px);
+        }
+      }
+
+      /* Mobile petit */
+      @media screen and (max-width: 480px) {
+        nav {
+          height: 50px;
+          grid-template-columns: 1fr auto auto;
+        }
+
+        .mobile-nav {
+          top: 50px;
+        }
+
+        .mobile-overlay {
+          top: 50px;
+          height: calc(100vh - 50px);
+        }
+
+        .info .logo-container img {
+          height: 28px;
+        }
+
+        .photo_profil {
+          height: 36px;
+          width: 36px;
+        }
+
+        .mobile-nav-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 4px;
+          padding: 0 12px;
+        }
+
+        .mobile-nav-item {
+          padding: 10px 4px;
+          min-height: 65px;
+        }
+
+        .mobile-nav-item img {
+          height: 22px;
+          width: 22px;
+        }
+
+        .mobile-nav-item span {
+          font-size: 11px;
+        }
+      }
+
+      /* Mode sombre */
+      @media (prefers-color-scheme: dark) {
+        nav {
+          background-color: #242526;
+          border-bottom-color: #3e4042;
+        }
+
+        .search-input {
+          background-color: #3a3b3c;
+          color: #e4e6ea;
+        }
+
+        .search-input::placeholder {
+          color: #b0b3b8;
+        }
+
+        .search-input:focus {
+          background-color: #242526;
+        }
+
+        .nav-item:hover,
+        .mobile-nav-item:hover,
+        .mobile-menu-btn:hover {
+          background-color: #3a3b3c;
+        }
+
+        .mobile-nav {
+          background-color: #242526;
+          border-bottom-color: #3e4042;
+        }
+
+        .mobile-nav-item {
+          color: #e4e6ea;
+        }
+
+        .hamburger span {
+          background-color: #e4e6ea;
+        }
+
+        .search-icon {
+          filter: invert(1);
+          opacity: 0.8;
+        }
+      }
+
+      /* Animations d'entrée */
+      .mobile-nav.active {
+        animation: slideDown 0.3s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          transform: translateY(-160px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* Focus et accessibilité */
+      .nav-item:focus,
+      .mobile-nav-item:focus,
+      .search-input:focus,
+      .mobile-menu-btn:focus,
+      .photo_profil:focus {
+        outline: 2px solid #1877f2;
+        outline-offset: 2px;
+      }
+
+      /* Optimisations touch */
+      @media (hover: none) and (pointer: coarse) {
+        .nav-item,
+        .mobile-nav-item,
+        .mobile-menu-btn {
+          min-height: 44px;
+          min-width: 44px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav>
+      <!-- Section gauche - Logo et recherche -->
+      <div class="info">
+        <div class="logo-container">
+          <img
+            src="/static/images/images/svg/logo-uiv.png"
+            alt="Logo UnivLabe"
+          />
         </div>
-      </button>
-      <div class="profile-container">
-        <img 
-          class="photo_profil" 
-          src="/static/images/images/svg/person-svgrepo-com.svg" 
-          alt="Photo de profil"
-          tabindex="0"
-          role="button"
-          aria-label="Menu utilisateur"
-        />
+        <div class="search-container">
+          <img
+            class="search-icon"
+            src="/static/images/images/svg/search-svgrepo-com.svg"
+            alt=""
+          />
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Rechercher sur univ-labe"
+            aria-label="Rechercher sur univ-labe"
+          />
+        </div>
+      </div>
+
+      <!-- Section centrale - Navigation desktop -->
+      <div class="nav">
+        <a href="/home" class="nav-item" aria-label="Accueil">
+          <img
+            src="/static/images/images/svg/home-svgrepo-com.svg"
+            alt="Accueil"
+          />
+        </a>
+        <a
+          href="/utilisateurs"
+          class="nav-item utilisateurs-head"
+          aria-label="Amis"
+        >
+          <img
+            src="/static/images/images/svg/person-team-svgrepo-com.svg"
+            alt="Amis"
+          />
+        </a>
+        <a
+          href="/notifs"
+          id="notif"
+          class="nav-item"
+          aria-label="Notifications"
+        >
+          <img
+            src="/static/images/images/svg/notifications-svgrepo-com.svg"
+            alt="Notifications"
+          />
+        </a>
+        <!-- Messages icon -->
+        <a
+          href="/messages"
+          id="messages-link"
+          class="nav-item"
+          aria-label="Messages"
+        >
+          <img
+            src="/static/images/images/svg/comment-alt-lines-svgrepo-com.svg"
+            alt="Messages"
+          />
+        </a>
+        <a href="/lost" class="nav-item" aria-label="Objets perdus">
+          <img
+            src="/static/images/images/svg/lost-items-missing-svgrepo-com.svg"
+            alt="Objets perdus"
+          />
+        </a>
+        <a href="/event" class="nav-item" aria-label="Événements">
+          <img
+            src="/static/images/images/svg/calendar-1195-svgrepo-com.svg"
+            alt="Événements"
+          />
+        </a>
+      </div>
+
+      <!-- Section droite - Menu mobile et profil -->
+      <div class="option">
+        <button
+          class="mobile-menu-btn"
+          aria-label="Menu de navigation"
+          aria-expanded="false"
+        >
+          <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </button>
+        <div class="profile-container">
+          <img
+            class="photo_profil"
+            src="/static/images/images/svg/person-svgrepo-com.svg"
+            alt="Photo de profil"
+            tabindex="0"
+            role="button"
+            aria-label="Menu utilisateur"
+          />
+        </div>
+      </div>
+    </nav>
+
+    <!-- Menu mobile -->
+    <div class="mobile-overlay"></div>
+    <div class="mobile-nav">
+      <div class="mobile-nav-grid">
+        <a href="/home" class="mobile-nav-item" aria-label="Accueil">
+          <img src="/static/images/images/svg/home-svgrepo-com.svg" alt="" />
+          <span>Accueil</span>
+        </a>
+        <a
+          href="/utilisateurs"
+          class="mobile-nav-item utilisateurs-head"
+          aria-label="Amis"
+        >
+          <img
+            src="/static/images/images/svg/person-team-svgrepo-com.svg"
+            alt=""
+          />
+          <span>Amis</span>
+        </a>
+        <a
+          href="/notifs"
+          id="mobile-notif"
+          class="mobile-nav-item"
+          aria-label="Notifications"
+        >
+          <img
+            src="/static/images/images/svg/notifications-svgrepo-com.svg"
+            alt=""
+          />
+          <span>Notifs</span>
+        </a>
+        <!-- Mobile messages -->
+        <a
+          href="/messages"
+          class="mobile-nav-item"
+          id="mobile-messages"
+          aria-label="Messages"
+        >
+          <img
+            src="/static/images/images/svg/comment-alt-lines-svgrepo-com.svg"
+            alt=""
+          />
+          <span>Messages</span>
+        </a>
+        <a href="/lost" class="mobile-nav-item" aria-label="Objets perdus">
+          <img
+            src="/static/images/images/svg/lost-items-missing-svgrepo-com.svg"
+            alt=""
+          />
+          <span>Perdus</span>
+        </a>
+        <a href="/event" class="mobile-nav-item" aria-label="Événements">
+          <img
+            src="/static/images/images/svg/calendar-1195-svgrepo-com.svg"
+            alt=""
+          />
+          <span>Events</span>
+        </a>
       </div>
     </div>
-  </nav>
 
-  <!-- Menu mobile -->
-  <div class="mobile-overlay"></div>
-  <div class="mobile-nav">
-    <div class="mobile-nav-grid">
-      <a href="/home" class="mobile-nav-item" aria-label="Accueil">
-        <img src="/static/images/images/svg/home-svgrepo-com.svg" alt="" />
-        <span>Accueil</span>
-      </a>
-      <a href="/utilisateurs" class="mobile-nav-item utilisateurs-head" aria-label="Amis">
-        <img src="/static/images/images/svg/person-team-svgrepo-com.svg" alt="" />
-        <span>Amis</span>
-      </a>
-      <a href="/notifs" class="mobile-notif" class="mobile-nav-item" aria-label="Notifications">
-        <img src="/static/images/images/svg/notifications-svgrepo-com.svg" alt="" />
-        <span>Notifs</span>
-      </a>
-      <a href="/lost" class="mobile-nav-item" aria-label="Objets perdus">
-        <img src="/static/images/images/svg/lost-items-missing-svgrepo-com.svg" alt="" />
-        <span>Perdus</span>
-      </a>
-      <a href="/event" class="mobile-nav-item" aria-label="Événements">
-        <img src="/static/images/images/svg/calendar-1195-svgrepo-com.svg" alt="" />
-        <span>Events</span>
-      </a>
-    </div>
-  </div>
-
-  <script>
-    document.querySelectorAll('.utilisateurs-head').forEach(user =>{
-      user.href += `/${decode().userId}`
-    })
-    function decode() {
-      try {
-        const base64Url = localStorage.getItem('token')?.split('.')[1];
-        if (!base64Url) return {};
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(
-          atob(base64).split('').map(function (c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-          }).join('')
-        );
-        return JSON.parse(jsonPayload);
-      } catch (error) {
-        console.error('Erreur de décodage du token:', error);
-        return {};
-      }
-    }
-
-    // Gestion de l'état actif de la navigation
-    function setActiveNavItem() {
-      const currentPath = window.location.pathname;
-      
-      // Navigation desktop
-      document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('active');
-        if (item.getAttribute('href') === currentPath) {
-          item.classList.add('active');
-        }
+    <script>
+      document.querySelectorAll(".utilisateurs-head").forEach((user) => {
+        user.href += `/${decode().userId}`;
       });
-
-      // Navigation mobile
-      document.querySelectorAll('.mobile-nav-item').forEach(item => {
-        item.classList.remove('active');
-        if (item.getAttribute('href') === currentPath) {
-          item.classList.add('active');
-        }
-      });
-    }
-
-    // Gestion du menu mobile
-    function initMobileMenu() {
-      const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-      const mobileOverlay = document.querySelector('.mobile-overlay');
-      const mobileNav = document.querySelector('.mobile-nav');
-      const hamburger = document.querySelector('.hamburger');
-
-      if (!mobileMenuBtn) return;
-
-      function toggleMobileMenu() {
-        const isActive = mobileNav.classList.contains('active');
-        
-        if (isActive) {
-          closeMobileMenu();
-        } else {
-          openMobileMenu();
+      function decode() {
+        try {
+          const base64Url = localStorage.getItem("token")?.split(".")[1];
+          if (!base64Url) return {};
+          const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split("")
+              .map(function (c) {
+                return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+              })
+              .join("")
+          );
+          return JSON.parse(jsonPayload);
+        } catch (error) {
+          console.error("Erreur de décodage du token:", error);
+          return {};
         }
       }
 
-      function openMobileMenu() {
-        mobileNav.classList.add('active');
-        mobileOverlay.classList.add('active');
-        hamburger.classList.add('active');
-        mobileMenuBtn.setAttribute('aria-expanded', 'true');
-        document.body.style.overflow = 'hidden';
-      }
+      // Gestion de l'état actif de la navigation
+      function setActiveNavItem() {
+        const currentPath = window.location.pathname;
 
-      function closeMobileMenu() {
-        mobileNav.classList.remove('active');
-        mobileOverlay.classList.remove('active');
-        hamburger.classList.remove('active');
-        mobileMenuBtn.setAttribute('aria-expanded', 'false');
-        document.body.style.overflow = '';
-      }
-
-      // Événements
-      mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-      mobileOverlay.addEventListener('click', closeMobileMenu);
-
-      // Fermer le menu avec Escape
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
-          closeMobileMenu();
-        }
-      });
-
-      // Fermer le menu lors du redimensionnement vers desktop
-      window.addEventListener('resize', () => {
-        if (window.innerWidth > 768) {
-          closeMobileMenu();
-        }
-      });
-
-      // Fermer le menu lors de la navigation
-      document.querySelectorAll('.mobile-nav-item').forEach(item => {
-        item.addEventListener('click', closeMobileMenu);
-      });
-    }
-
-    // Configuration des notifications avec userId
-    function setupNotifications() {
-      const user = decode();
-      if (user?.userId) {
-        const desktopNotif = document.getElementById('notif');
-        const mobileNotif = document.getElementById('mobile-notif');
-        
-        if (desktopNotif) {
-          desktopNotif.href += '/' + user.userId;
-        }
-        if (mobileNotif) {
-          mobileNotif.href += '/' + user.userId;
-        }
-      }
-    }
-
-    // Gestion de la recherche
-    function initSearch() {
-      const searchInput = document.querySelector('.search-input');
-      if (!searchInput) return;
-
-      searchInput.addEventListener('focus', () => {
-        searchInput.parentElement.style.transform = 'scale(1.02)';
-      });
-
-      searchInput.addEventListener('blur', () => {
-        searchInput.parentElement.style.transform = 'scale(1)';
-      });
-
-      // Recherche en temps réel (optionnel)
-      let searchTimeout;
-      searchInput.addEventListener('input', (e) => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-          const query = e.target.value.trim();
-          if (query.length > 2) {
-            // Ici vous pouvez ajouter la logique de recherche
-            console.log('Recherche:', query);
+        // Navigation desktop
+        document.querySelectorAll(".nav-item").forEach((item) => {
+          item.classList.remove("active");
+          if (item.getAttribute("href") === currentPath) {
+            item.classList.add("active");
           }
-        }, 300);
-      });
-    }
+        });
 
-    // Gestion du profil utilisateur
-    function initProfile() {
-      const profilePicture = document.querySelector('.photo_profil');
-      if (!profilePicture) return;
-
-      const user = decode();
-      if (user?.photo) {
-        profilePicture.src = `/static/profil/${user.photo}`;
+        // Navigation mobile
+        document.querySelectorAll(".mobile-nav-item").forEach((item) => {
+          item.classList.remove("active");
+          if (item.getAttribute("href") === currentPath) {
+            item.classList.add("active");
+          }
+        });
       }
 
-      // Menu déroulant du profil (optionnel)
-      profilePicture.addEventListener('click', () => {
-        // Ici vous pouvez ajouter un menu déroulant
-        console.log('Profil cliqué');
-      });
-    }
+      // Gestion du menu mobile
+      function initMobileMenu() {
+        const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
+        const mobileOverlay = document.querySelector(".mobile-overlay");
+        const mobileNav = document.querySelector(".mobile-nav");
+        const hamburger = document.querySelector(".hamburger");
 
-    // Optimisation des performances
-    function debounce(func, wait) {
-      let timeout;
-      return function executedFunction(...args) {
-        const later = () => {
-          clearTimeout(timeout);
-          func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-      };
-    }
+        if (!mobileMenuBtn) return;
 
-    // Initialisation
-    document.addEventListener('DOMContentLoaded', () => {
-      setActiveNavItem();
-      initMobileMenu();
-      setupNotifications();
-      initSearch();
-      initProfile();
+        function toggleMobileMenu() {
+          const isActive = mobileNav.classList.contains("active");
 
-      // Gestion du scroll pour masquer/afficher la navbar (optionnel)
-      let lastScrollY = window.scrollY;
-      const navbar = document.querySelector('nav');
-      
-      const handleScroll = debounce(() => {
-        const currentScrollY = window.scrollY;
-        
-        if (currentScrollY > lastScrollY && currentScrollY > 100) {
-          // Scroll vers le bas - masquer
-          navbar.style.transform = 'translateY(-100%)';
-        } else {
-          // Scroll vers le haut - afficher
-          navbar.style.transform = 'translateY(0)';
+          if (isActive) {
+            closeMobileMenu();
+          } else {
+            openMobileMenu();
+          }
         }
-        
-        lastScrollY = currentScrollY;
-      }, 10);
 
-      // Décommenter pour activer le masquage au scroll
-      // window.addEventListener('scroll', handleScroll, { passive: true });
-    });
+        function openMobileMenu() {
+          mobileNav.classList.add("active");
+          mobileOverlay.classList.add("active");
+          hamburger.classList.add("active");
+          mobileMenuBtn.setAttribute("aria-expanded", "true");
+          document.body.style.overflow = "hidden";
+        }
 
-    // Service Worker pour le cache (optionnel)
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('SW registered: ', registration);
-          })
-          .catch(registrationError => {
-            console.log('SW registration failed: ', registrationError);
-          });
+        function closeMobileMenu() {
+          mobileNav.classList.remove("active");
+          mobileOverlay.classList.remove("active");
+          hamburger.classList.remove("active");
+          mobileMenuBtn.setAttribute("aria-expanded", "false");
+          document.body.style.overflow = "";
+        }
+
+        // Événements
+        mobileMenuBtn.addEventListener("click", toggleMobileMenu);
+        mobileOverlay.addEventListener("click", closeMobileMenu);
+
+        // Fermer le menu avec Escape
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && mobileNav.classList.contains("active")) {
+            closeMobileMenu();
+          }
+        });
+
+        // Fermer le menu lors du redimensionnement vers desktop
+        window.addEventListener("resize", () => {
+          if (window.innerWidth > 768) {
+            closeMobileMenu();
+          }
+        });
+
+        // Fermer le menu lors de la navigation
+        document.querySelectorAll(".mobile-nav-item").forEach((item) => {
+          item.addEventListener("click", closeMobileMenu);
+        });
+      }
+
+      // Configuration des notifications avec userId
+      function setupNotifications() {
+        const user = decode();
+        if (user?.userId) {
+          const desktopNotif = document.getElementById("notif");
+          const mobileNotif = document.getElementById("mobile-notif");
+
+          if (desktopNotif) {
+            desktopNotif.href += "/" + user.userId;
+          }
+          if (mobileNotif) {
+            mobileNotif.href += "/" + user.userId;
+          }
+          // Append userId to messages links
+          const desktopMessages = document.getElementById("messages-link");
+          const mobileMessages = document.getElementById("mobile-messages");
+          if (desktopMessages) desktopMessages.href += "/" + user.userId;
+          if (mobileMessages) mobileMessages.href += "/" + user.userId;
+
+          // Add a small unread badge to desktop messages icon
+          if (desktopMessages && !desktopMessages.querySelector(".msg-badge")) {
+            const badge = document.createElement("span");
+            badge.className = "msg-badge";
+            badge.style.cssText =
+              "display:none;position:absolute;top:6px;right:6px;background:#e0245e;color:white;border-radius:10px;padding:2px 6px;font-size:12px;min-width:20px;text-align:center;";
+            desktopMessages.style.position = "relative";
+            desktopMessages.appendChild(badge);
+          }
+        }
+      }
+
+      // Gestion de la recherche depuis le header
+      function initSearch() {
+        const searchInput = document.querySelector(".search-input");
+        const searchIcon = document.querySelector(".search-icon");
+        if (!searchInput) return;
+
+        function redirectToSearch(q) {
+          const value = (q || "").trim();
+          if (!value) return;
+          const url = "/search?q=" + encodeURIComponent(value);
+          window.location.href = url;
+        }
+
+        searchInput.addEventListener("focus", () => {
+          searchInput.parentElement.style.transform = "scale(1.02)";
+        });
+
+        searchInput.addEventListener("blur", () => {
+          searchInput.parentElement.style.transform = "scale(1)";
+        });
+
+        // Soumettre la recherche quand l'utilisateur appuie sur Enter
+        searchInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            redirectToSearch(searchInput.value);
+          }
+        });
+
+        // Clic sur l'icône lance aussi la recherche
+        if (searchIcon) {
+          searchIcon.style.cursor = "pointer";
+          searchIcon.addEventListener("click", () =>
+            redirectToSearch(searchInput.value)
+          );
+        }
+
+        // Recherche en temps réel (débounce) — actuellement logging, utilisable pour suggestions
+        let searchTimeout;
+        searchInput.addEventListener("input", (e) => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            const query = e.target.value.trim();
+            if (query.length > 2) {
+              // Placeholder: on pourrait appeler /api/search?q=... et afficher des suggestions
+              console.log("Recherche (prévisualisation):", query);
+            }
+          }, 300);
+        });
+      }
+
+      // Gestion du profil utilisateur
+      function initProfile() {
+        const profilePicture = document.querySelector(".photo_profil");
+        if (!profilePicture) return;
+
+        const user = decode();
+        if (user?.photo) {
+          profilePicture.src = `/static/profil/${user.photo}`;
+        }
+
+        // Menu déroulant du profil (optionnel)
+        profilePicture.addEventListener("click", () => {
+          // Ici vous pouvez ajouter un menu déroulant
+          console.log("Profil cliqué");
+        });
+      }
+
+      // Optimisation des performances
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+      // Initialisation
+      document.addEventListener("DOMContentLoaded", () => {
+        setActiveNavItem();
+        initMobileMenu();
+        setupNotifications();
+        initSearch();
+        initProfile();
+
+        // Gestion du scroll pour masquer/afficher la navbar (optionnel)
+        let lastScrollY = window.scrollY;
+        const navbar = document.querySelector("nav");
+
+        const handleScroll = debounce(() => {
+          const currentScrollY = window.scrollY;
+
+          if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            // Scroll vers le bas - masquer
+            navbar.style.transform = "translateY(-100%)";
+          } else {
+            // Scroll vers le haut - afficher
+            navbar.style.transform = "translateY(0)";
+          }
+
+          lastScrollY = currentScrollY;
+        }, 10);
+
+        // Décommenter pour activer le masquage au scroll
+        // window.addEventListener('scroll', handleScroll, { passive: true });
       });
-    }
-  </script>
-</body>
+
+  // Service Worker pour le cache (optionnel)
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then((registration) => {
+              console.log("SW registered: ", registration);
+            })
+            .catch((registrationError) => {
+              console.log("SW registration failed: ", registrationError);
+            });
+        });
+      }
+      // token is kept in localStorage only (no cookie sync)
+  // token is kept in localStorage only (no cookie sync) — verification removed
+    </script>
+  </body>
 </html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Recherche</title>
+    <style>
+      :root {
+        --site-blue: #1877f2;
+        --muted: #666;
+        --bg: #f0f2f5;
+        --card: #fff;
+        --border: #e6e9ee;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        background: var(--bg);
+        margin: 0;
+        color: #111;
+      }
+      .wrap {
+        max-width: 960px;
+        margin: 24px auto;
+        padding: 16px;
+      }
+      h2 {
+        margin: 0 0 12px 0;
+        font-weight: 600;
+      }
+
+      .search-box {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .search-box input {
+        flex: 1;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: white;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) inset;
+        font-size: 15px;
+      }
+
+      .search-box button {
+        background: var(--site-blue);
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        box-shadow: 0 4px 10px rgba(24, 119, 242, 0.12);
+        transition: transform 0.08s ease, box-shadow 0.12s ease,
+          opacity 0.08s ease;
+      }
+
+      .search-box button:hover {
+        transform: translateY(-1px);
+      }
+      .search-box button:active {
+        transform: translateY(0);
+      }
+
+      .results {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .result-group {
+        background: var(--card);
+        padding: 14px;
+        border-radius: 10px;
+        margin-bottom: 0;
+        box-shadow: 0 6px 18px rgba(15, 20, 30, 0.03);
+        border: 1px solid var(--border);
+      }
+
+      .result-group h3 {
+        margin: 0 0 8px 0;
+        font-size: 16px;
+      }
+
+      .user-row,
+      .post-row {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 10px 0;
+        border-bottom: 1px solid #f6f7f8;
+      }
+
+      .user-row:last-child,
+      .post-row:last-child {
+        border-bottom: none;
+      }
+
+      .avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .meta {
+        font-size: 15px;
+        color: #111;
+        font-weight: 600;
+      }
+      .meta a {
+        color: var(--site-blue);
+        text-decoration: none;
+      }
+      .small {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .post-content {
+        font-size: 15px;
+        color: #222;
+        margin-top: 6px;
+      }
+
+      .user-row:hover,
+      .post-row:hover {
+        background: #fbfdff;
+      }
+
+      .no-results {
+        color: var(--muted);
+        padding: 12px 0;
+      }
+
+      @media (max-width: 720px) {
+        .wrap {
+          padding: 12px;
+        }
+        .avatar {
+          width: 48px;
+          height: 48px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('./partials/header') %>
+    <div class="wrap">
+      <h2>Recherche</h2>
+      <div class="search-box">
+        <input
+          id="q"
+          autocomplete="off"
+          placeholder="Rechercher posts ou utilisateurs..."
+          value="<%= query || '' %>"
+        />
+        <button id="btn-search">Rechercher</button>
+      </div>
+
+      <div class="results">
+        <div class="result-group" id="users">
+          <h3>Utilisateurs</h3>
+          <% if (users && users.length) { %> <% users.forEach(u => { %>
+          <div class="user-row">
+            <img
+              class="avatar"
+              src="/static/profil/<%= u.Profil && u.Profil.urlPhoto ? u.Profil.urlPhoto : 'default.png' %>"
+            />
+            <div>
+              <div class="meta">
+                <a href="/user/<%= u.id %>"><%= u.prenom %> <%= u.nom %></a>
+              </div>
+              <div class="small">@<%= u.email || 'inconnu' %></div>
+            </div>
+          </div>
+          <% }) %> <% } else { %>
+          <div class="no-results">Aucun utilisateur trouvé</div>
+          <% } %>
+        </div>
+
+        <div class="result-group" id="posts">
+          <h3>Publications</h3>
+          <% if (posts && posts.length) { %> <% posts.forEach(p => { %>
+          <div class="post-row">
+            <div style="flex: 1">
+              <div class="meta">
+                <a href="/user/<%= p.User && p.User.id %>"
+                  ><%= p.User && (p.User.prenom + ' ' + p.User.nom) %></a
+                >
+                •
+                <span class="small"
+                  ><%= new Date(p.createdAt).toLocaleString('fr-FR') %></span
+                >
+              </div>
+              <div class="post-content">
+                <%= p.contenu.length > 200 ? p.contenu.substring(0,200) + '...'
+                : p.contenu %>
+              </div>
+            </div>
+          </div>
+          <% }) %> <% } else { %>
+          <div class="no-results">Aucun post trouvé</div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // debounce helper
+      function debounce(fn, wait) {
+        let t;
+        return function (...a) {
+          clearTimeout(t);
+          t = setTimeout(() => fn.apply(this, a), wait);
+        };
+      }
+
+      const qInput = document.getElementById("q");
+      const usersEl = document.getElementById("users");
+      const postsEl = document.getElementById("posts");
+
+      async function doSearch(q) {
+        if (!q) return;
+        try {
+          const res = await fetch("/api/search?q=" + encodeURIComponent(q));
+          const json = await res.json();
+          renderResults(json.users, json.posts);
+        } catch (e) {
+          console.error("search error", e);
+        }
+      }
+
+      function renderResults(users, posts) {
+        // render users
+        const usersHtml =
+          users && users.length
+            ? users
+                .map(
+                  (u) => `
+        <div class="user-row">
+          <img class="avatar" src="/static/profil/${
+            u.Profil && u.Profil.urlPhoto ? u.Profil.urlPhoto : "default.png"
+          }" />
+          <div>
+            <div class="meta"><a href="/user/${u.id}">${u.prenom} ${
+                    u.nom
+                  }</a></div>
+            <div class="small">@${u.email || "inconnu"}</div>
+          </div>
+        </div>
+      `
+                )
+                .join("")
+            : '<div class="no-results">Aucun utilisateur trouvé</div>';
+        usersEl.innerHTML = "<h3>Utilisateurs</h3>" + usersHtml;
+
+        const postsHtml =
+          posts && posts.length
+            ? posts
+                .map(
+                  (p) => `
+        <div class="post-row">
+          <div style="flex:1">
+            <div class="meta"><a href="/user/${p.User && p.User.id}">${
+                    p.User && p.User.prenom + " " + p.User.nom
+                  }</a> • <span class="small">${new Date(
+                    p.createdAt
+                  ).toLocaleString("fr-FR")}</span></div>
+            <div class="post-content">${
+              p.contenu.length > 200
+                ? p.contenu.substring(0, 200) + "..."
+                : p.contenu
+            }</div>
+          </div>
+        </div>
+      `
+                )
+                .join("")
+            : '<div class="no-results">Aucun post trouvé</div>';
+        postsEl.innerHTML = "<h3>Publications</h3>" + postsHtml;
+      }
+
+      if (qInput) {
+        const deb = debounce((e) => doSearch(e.target.value.trim()), 300);
+        qInput.addEventListener("input", deb);
+
+        // Enter key submits the search
+        qInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            doSearch(qInput.value.trim());
+          }
+        });
+      }
+
+      const btn = document.getElementById("btn-search");
+      if (btn)
+        btn.addEventListener("click", () => doSearch(qInput.value.trim()));
+
+      // Run initial search if server provided a query value
+      (function init() {
+        const initial = (qInput && qInput.value && qInput.value.trim()) || "";
+        if (initial.length > 0) doSearch(initial);
+      })();
+    </script>
+  </body>
+</html>

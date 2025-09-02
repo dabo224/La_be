@@ -2,168 +2,773 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messagerie</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+            min-height: auto;
+            padding: 20px 0;
+        }
+
+        .message-image {
+            max-width: 200px;
+            border-radius: 8px;
+            margin: 5px 0;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .message-image:hover {
+            transform: scale(1.05);
+        }
+
+        /* Typing indicator (three blinking dots) */
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+            padding: 0;
+            border-radius: 8px;
+            background: transparent;
+            max-width: none;
+            margin: 6px 0;
+        }
+
+        .typing-indicator .dots {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            padding: 4px 6px;
+        }
+
+        .typing-indicator .dot {
+            width: 8px;
+            height: 8px;
+            background: #8a8f97;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: blink 1s infinite ease-in-out;
+        }
+
+        .typing-indicator .dot:nth-child(2) { animation-delay: 0.15s; }
+        .typing-indicator .dot:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes blink {
+            0% { opacity: 0.3; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(-2px); }
+            100% { opacity: 0.3; transform: translateY(0); }
+        }
+
+        .message-content img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .image-upload-label {
+            cursor: pointer;
+            padding: 5px;
+            color: #1877f2;
+            margin-right: 10px;
+        }
+
+        .image-upload-label:hover {
+            color: #166fe5;
+        }
+
+        .message-input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        /* Preview d'image sous le champ de saisie */
+        .image-preview {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            background: #f6f8fa;
+            border: 1px solid rgba(0,0,0,0.04);
+            max-width: 420px;
+        }
+
+        .image-preview img {
+            width: 72px;
+            height: 72px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .image-preview .preview-info {
+            flex: 1;
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        .image-preview .preview-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-clear-preview {
+            background: transparent;
+            border: 1px solid rgba(0,0,0,0.08);
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Make upload label look like button */
+        .image-upload-label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: #1877f2;
+            cursor: pointer;
+        }
+
+        .image-upload-label svg { width:18px; height:18px }
+
+        .message-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        /* Ensure the chat input inside .message-actions expands */
+        .message-actions #chat-input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Fixed minimal widths for left icon and send button */
+        .image-upload-label {
+            min-width: 42px;
+            min-height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .message-actions button[type="submit"] {
+            min-width: 80px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: linear-gradient(135deg,#1877f2 0%,#1564d4 100%);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        @media (max-width: 480px) {
+            .image-upload-label { min-width: 36px; min-height: 36px }
+            .message-actions button[type="submit"] { min-width: 64px; padding: 8px 10px }
+        }
+
         .messagerie-container {
             display: flex;
-            height: 90vh;
-            width: 100vw;
-            margin-top: 40px;
+            height: calc(100vh - 80px);
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
             background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px #aaa;
+            border-radius: 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
         }
+
+        /* Liste des amis */
         .friends-list {
-            width: 300px;
-            background: #f7f7f7;
-            border-right: 1px solid #eee;
-            padding: 0;
-            overflow-y: auto;
+            width: 350px;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
         }
+
+        .friends-header {
+            padding: 25px 20px;
+            background: #fff;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .friends-header h2 {
+            font-size: 1.4em;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .friends-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .friends-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .friends-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .friends-container::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+
         .friend-item {
             display: flex;
             align-items: center;
-            padding: 15px 10px;
+            padding: 16px;
+            margin-bottom: 8px;
             cursor: pointer;
-            border-bottom: 1px solid #eee;
-            transition: background 0.2s;
-            background: #f7f7f7;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            background: #fff;
         }
-        .friend-item.selected, .friend-item:hover {
-            background: #e6f0ff;
+
+        .friend-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 0;
+            background: #1877f2;
+            border-radius: 0 4px 4px 0;
+            transition: height 0.3s ease;
         }
+
+        .friend-item.selected {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(24, 119, 242, 0.15);
+        }
+
+        .friend-item.selected::before {
+            height: 30px;
+        }
+
+        .friend-item:hover:not(.selected) {
+            background: #f8f9fa;
+            transform: translateX(3px);
+        }
+
         .friend-photo {
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             object-fit: cover;
             margin-right: 15px;
-            border: 2px solid #1877f2;
+            border: 3px solid #1877f2;
             background: #fff;
+            transition: transform 0.3s ease;
         }
+
+        .friend-item:hover .friend-photo {
+            transform: scale(1.05);
+        }
+
+        .friend-info {
+            flex: 1;
+        }
+
         .friend-name {
-            font-size: 1.1em;
-            color: #222;
+            font-size: 1.05em;
+            color: #2c3e50;
             font-weight: 500;
+            margin-bottom: 4px;
         }
+
+        .friend-status {
+            font-size: 0.85em;
+            color: #95a5a6;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #2ecc71;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Zone de chat */
         .chat-zone {
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
-            background: #f0f2f5;
+            background: linear-gradient(180deg, #f5f7fa 0%, #c3cfe2 100%);
             position: relative;
         }
+
         .chat-header {
-            background: #1877f2;
+            background: linear-gradient(135deg, #1877f2 0%, #0e5ec4 100%);
             color: #fff;
-            padding: 15px;
-            font-size: 1.2em;
-            font-weight: bold;
-            border-radius: 0 0 0 0;
-            min-height: 50px;
+            padding: 20px 25px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(24, 119, 242, 0.3);
         }
+
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-header-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            margin-right: 15px;
+            display: none;
+        }
+
+        .chat-header-name {
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .chat-header-status {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
         #chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
-            background: #f9f9f9;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* augmente l'espace entre les messages */
         }
+
+        #chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .msg-me {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #1877f2 0%, #1564d4 100%);
+            color: #fff;
+            position: relative;
+            border-radius: 20px 20px 4px 20px;
+            padding: 12px 18px;
+            max-width: 65%;
+            box-shadow: 0 3px 8px rgba(24, 119, 242, 0.2);
+            word-break: break-word;
+            font-size: 0.95em;
+            line-height: 1.4;
+            animation: slideInRight 0.3s ease;
+            margin-bottom: 8px;
+        }
+
+        .msg-other {
+            align-self: flex-start;
+            background: #fff;
+            color: #2c3e50;
+            position: relative;
+            border-radius: 20px 20px 20px 4px;
+            padding: 12px 18px;
+            max-width: 65%;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            word-break: break-word;
+            font-size: 0.95em;
+            line-height: 1.4;
+            animation: slideInLeft 0.3s ease;
+            margin-bottom: 8px;
+        }
+
+        /* Si le message ne contient qu'une image, retirer le fond de bulle */
+        .msg-me.img-only, .msg-other.img-only {
+            background: transparent !important;
+            padding: 0 !important;
+            border-radius: 8px !important;
+            box-shadow: none !important;
+            max-width: none !important;
+        }
+
+        /* Petit label 'Modifier' au-dessus à droite */
+        .edit-label {
+            position: absolute;
+            top: -12px;
+            right: 8px;
+            font-size: 0.75em;
+            cursor: pointer;
+            opacity: 0.85;
+            padding: 2px 6px;
+            border-radius: 6px;
+            transition: opacity 0.15s ease;
+        }
+
+        .edit-label:hover { opacity: 1; }
+
+        .edit-label.edit-me { color: rgba(255,255,255,0.9); background: rgba(0,0,0,0.08); }
+        .edit-label.edit-other { color: #333; background: rgba(0,0,0,0.04); }
+
+        /* Style de l'image dans un message image-only */
+        .msg-me.img-only .message-image,
+        .msg-other.img-only .message-image {
+            display: block;
+            max-width: 320px;
+            border-radius: 8px;
+            margin: 6px 0; /* espace autour de l'image pour séparer les messages */
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .empty-chat {
+            color: #95a5a6;
+            text-align: center;
+            margin: auto;
+            font-size: 1.1em;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Formulaire de chat */
         #chat-form {
             display: flex;
-            border-top: 1px solid #eee;
+            padding: 20px;
             background: #fff;
-            padding: 10px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            gap: 12px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            box-sizing: border-box;
         }
+
         #chat-input {
             flex: 1;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            margin-right: 10px;
-            background: #f0f2f5;
+            border: 2px solid #e9ecef;
+            padding: 14px 20px;
+            border-radius: 25px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
         }
+
+        #chat-input:focus {
+            outline: none;
+            border-color: #1877f2;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.1);
+        }
+
         #chat-form button {
+            background: linear-gradient(135deg, #1877f2 0%, #1564d4 100%);
+            color: #fff;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
+        }
+
+        #chat-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(24, 119, 242, 0.4);
+        }
+
+        #chat-form button:active {
+            transform: translateY(0);
+        }
+
+        /* Menu burger mobile */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 20px;
+            z-index: 1000;
             background: #1877f2;
             color: #fff;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 50%;
             cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
         }
-        .msg-me { text-align: right; color: #1877f2; margin: 5px 0; }
-        .msg-other { text-align: left; color: #222; margin: 5px 0; }
-        .msg-me {
-    align-self: flex-end;
-    background: #1877f2;
-    color: #fff;
-    border-radius: 18px 18px 4px 18px;
-    padding: 10px 16px;
-    margin: 6px 0 6px auto;
-    max-width: 70%;
-    width: fit-content;
-    box-shadow: 0 1px 1px rgba(0,0,0,0.08);
-    text-align: left;
-    word-break: break-word;
-    font-size: 1em;
-}
 
-.msg-other {
-    align-self: flex-start;
-    background: #fff;
-    color: #222;
-    border-radius: 18px 18px 18px 4px;
-    padding: 10px 16px;
-    margin: 6px auto 6px 0;
-    width: fit-content;
-    max-width: 70%;
-    box-shadow: 0 1px 1px rgba(0,0,0,0.08);
-    text-align: left;
-    word-break: break-word;
-    font-size: 1em;
-}
-        .empty-chat {
-            color: #888;
-            text-align: center;
-            margin-top: 40px;
-            font-size: 1.2em;
+        .mobile-menu-toggle:hover {
+            transform: scale(1.1);
+            background: #1564d4;
+        }
+
+        .mobile-menu-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Overlay mobile */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+
+            .messagerie-container {
+                margin: 40px 0 0;
+                border-radius: 0;
+                height: calc(100vh - 40px);
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .friends-list {
+                position: fixed;
+                left: -100%;
+                top: 40px;
+                bottom: 0;
+                width: 280px;
+                z-index: 999;
+                transition: left 0.3s ease;
+                border-radius: 0;
+            }
+
+            .friends-list.active {
+                left: 0;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .chat-zone {
+                width: 100%;
+            }
+
+            .chat-header {
+                padding: 15px 20px 15px 60px;
+                min-height: 60px;
+            }
+
+            .chat-header-name {
+                font-size: 1.1em;
+            }
+
+            #chat-messages {
+                padding: 20px 15px;
+            }
+
+            .msg-me, .msg-other {
+                max-width: 80%;
+            }
+
+            #chat-form {
+                padding: 15px;
+            }
+
+            #chat-input {
+                padding: 12px 16px;
+            }
+
+            #chat-form button {
+                padding: 12px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .friends-list {
+                width: 100%;
+            }
+
+            .msg-me, .msg-other {
+                max-width: 90%;
+                font-size: 0.9em;
+            }
+
+            #chat-form button {
+                padding: 12px 16px;
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
 <body>
     <%- include('./partials/header') %>
+    
+    <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+    
+    <div class="mobile-overlay" id="mobile-overlay"></div>
+    
     <div class="messagerie-container">
         <!-- Liste des amis à gauche -->
         <div class="friends-list" id="friends-list">
-            <% if (amis && amis.length > 0) { %>
-                <% amis.forEach(friend => { %>
-                    <div class="friend-item"
-                        data-friendid="<%= friend.id %>"
-                        data-friendname="<%= friend.prenom %> <%= friend.nom %>">
-                        <img class="friend-photo" src="/static/profil/<%= friend.urlPhoto ? friend.urlPhoto : 'default.png' %>" alt="photo">
-                        <span class="friend-name"><%= friend.prenom %> <%= friend.nom %></span>
-                    </div>
-                <% }) %>
-            <% } else { %>
-                <div class="empty-chat">Vous n'avez pas encore d'amis.</div>
-            <% } %>
+            <div class="friends-header">
+                <h2>Conversations</h2>
+            </div>
+            <div class="friends-container">
+                <% if (amis && amis.length > 0) { %>
+                    <% amis.forEach(friend => { %>
+                        <div class="friend-item"
+                            data-friendid="<%= friend.id %>"
+                            data-friendname="<%= friend.prenom %> <%= friend.nom %>">
+                            <img class="friend-photo" src="/static/profil/<%= friend.urlPhoto ? friend.urlPhoto : 'default.png' %>" alt="photo">
+                            <div class="friend-info">
+                                <div class="friend-name"><%= friend.prenom %> <%= friend.nom %></div>
+                                <div class="friend-status">
+                                    <span class="status-dot"></span>
+                                    <span>En ligne</span>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="empty-chat">Vous n'avez pas encore d'amis.</div>
+                <% } %>
+            </div>
         </div>
+        
         <!-- Zone de chat à droite -->
         <div class="chat-zone">
             <div class="chat-header" id="chat-user-header">
-                Sélectionnez un ami pour démarrer la conversation
+                <div class="chat-header-info">
+                    <div class="chat-header-photo" id="chat-header-photo"></div>
+                    <div>
+                        <div class="chat-header-name" id="chat-header-name">
+                            Sélectionnez un ami pour démarrer
+                        </div>
+                        <div class="chat-header-status" id="chat-header-status" style="display: none;">
+                            En ligne maintenant
+                        </div>
+                    </div>
+                    <div style="margin-left:12px;">
+                        <button id="call-btn" title="Appeler" style="display:none;padding:8px 12px;border-radius:8px;">Appeler</button>
+                    </div>
+                </div>
             </div>
+            
             <div id="chat-messages">
                 <div class="empty-chat" id="empty-chat-msg">
                     Sélectionnez un ami pour démarrer la conversation
                 </div>
             </div>
-            <form id="chat-form" autocomplete="off" style="display:none;">
-                <input type="text" id="chat-input" placeholder="Votre message..." />
-                <button type="submit">Envoyer</button>
+            
+            <form id="chat-form" autocomplete="off" style="display:none;" enctype="multipart/form-data">
+                <div class="message-input-container">
+                    <div class="image-preview" id="image-preview" style="display:none;">
+                        <img id="preview-img" src="" alt="preview">
+                        <div class="preview-info" id="preview-info">Aperçu image</div>
+                        <div class="preview-actions">
+                            <button type="button" class="btn-clear-preview" id="clear-preview">Retirer</button>
+                        </div>
+                    </div>
+
+                    <div class="message-actions">
+                        <label for="imageUpload" class="image-upload-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                        </label>
+                        <button type="button" id="record-btn" title="Enregistrer un message vocal" class="image-upload-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 1v11" />
+                                <rect x="8" y="1" width="8" height="14" rx="4"/>
+                                <path d="M19 11v2a7 7 0 0 1-14 0v-2" />
+                            </svg>
+                        </button>
+                        <input type="file" id="imageUpload" name="image" accept="image/*" style="display: none;">
+                        <input type="text" id="chat-input" placeholder="Écrivez votre message..." />
+                        <button type="submit">Envoyer</button>
+                    </div>
+                </div>
             </form>
+            <div id="record-status" style="display:none;padding:8px 20px;color:#333;font-size:0.9em;"></div>
         </div>
     </div>
 
@@ -173,71 +778,667 @@
         const socket = io();
         socket.emit('join', myUserId);
 
+    // WebRTC state
+    let pc = null;
+    let localStream = null;
+    let remoteStream = null;
+    const peerConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
         let currentFriendId = null;
         let currentFriendName = "";
+
+        // Gestion du menu mobile
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        const friendsList = document.getElementById('friends-list');
+
+        mobileMenuToggle.addEventListener('click', () => {
+            friendsList.classList.toggle('active');
+            mobileOverlay.classList.toggle('active');
+        });
+
+        mobileOverlay.addEventListener('click', () => {
+            friendsList.classList.remove('active');
+            mobileOverlay.classList.remove('active');
+        });
 
         // Sélection d'un ami
         document.querySelectorAll('.friend-item').forEach(item => {
             item.addEventListener('click', async () => {
+                console.log('Friend clicked');
+                // Fermer le menu mobile si ouvert
+                if (friendsList && mobileOverlay) {
+                    friendsList.classList.remove('active');
+                    mobileOverlay.classList.remove('active');
+                }
+                
                 // Visuel sélection
                 document.querySelectorAll('.friend-item').forEach(i => i.classList.remove('selected'));
                 item.classList.add('selected');
 
                 currentFriendId = item.getAttribute('data-friendid');
                 currentFriendName = item.getAttribute('data-friendname');
-                document.getElementById('chat-user-header').textContent = currentFriendName;
-                document.getElementById('chat-messages').innerHTML = "";
-                document.getElementById('chat-form').style.display = 'flex';
+                
+                console.log('Selected friend:', { currentFriendId, currentFriendName });
+                
+                // Mise à jour du header
+                document.getElementById('chat-header-name').textContent = currentFriendName;
+                document.getElementById('chat-header-status').style.display = 'block';
+                
+                const chatForm = document.getElementById('chat-form');
+                if (chatForm) {
+                    chatForm.style.display = 'flex';
+                } else {
+                    console.error('Chat form not found');
+                }
+
+                // show call button
+                const callBtn = document.getElementById('call-btn');
+                if (callBtn) callBtn.style.display = 'inline-block';
+                
+                // Prepare chat messages container
 
                 // Charger l'historique
-                const response = await fetch(`/api/messages/${myUserId}/${currentFriendId}`);
-                const historique = await response.json();
-                if (historique.length === 0) {
-                    document.getElementById('chat-messages').innerHTML = '<div class="empty-chat">Aucun message pour le moment.</div>';
-                } else {
-                    historique.forEach(msg => {
-                        afficherMessage(
-                            msg.from == myUserId ? "Moi" : currentFriendName,
-                            msg.message,
-                            msg.from == myUserId
-                        );
-                    });
+                console.log('Loading messages for:', currentFriendId);
+                const chatMessages = document.getElementById('chat-messages');
+                chatMessages.innerHTML = '<div class="empty-chat">Chargement des messages...</div>';
+
+                try {
+                    const response = await fetch(`/api/messages/${myUserId}/${currentFriendId}`);
+                    if (!response.ok) {
+                        throw new Error('Erreur lors du chargement des messages');
+                    }
+                    const historique = await response.json();
+                    console.log('Messages loaded:', historique);
+
+                    chatMessages.innerHTML = '';
+
+                    if (historique.length === 0) {
+                        chatMessages.innerHTML = '<div class="empty-chat">Aucun message pour le moment. Commencez la conversation!</div>';
+                    } else {
+                        historique.forEach(msg => {
+                            console.log('Processing message:', msg);
+                            afficherMessage(
+                                msg.from == myUserId ? "Moi" : currentFriendName,
+                                {
+                                    message: msg.message,
+                                    imageUrl: msg.imageUrl,
+                                    audioUrl: msg.audioUrl
+                                },
+                                msg.from == myUserId,
+                                msg.id
+                            );
+                        });
+                        // Scroll to bottom
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                } catch (error) {
+                    console.error('Erreur lors du chargement des messages:', error);
+                    chatMessages.innerHTML = '<div class="empty-chat">Erreur lors du chargement des messages</div>';
                 }
             });
         });
 
-        // Ferme la conversation (optionnel, ici on ne ferme pas la zone de chat)
+        // Call UI handlers
+        const callBtn = document.getElementById('call-btn');
+        callBtn.addEventListener('click', startCall);
 
-        // Envoie un message texte
-        document.getElementById('chat-form').onsubmit = function(e) {
+        async function startCall() {
+            if (!currentFriendId) return alert('Choisissez un destinataire');
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                pc = new RTCPeerConnection(peerConfig);
+                // add local tracks
+                localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+                // create remote stream container
+                remoteStream = new MediaStream();
+                pc.ontrack = (ev) => { ev.streams[0].getTracks().forEach(t => remoteStream.addTrack(t)); };
+                pc.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        socket.emit('call-candidate', { from: myUserId, to: currentFriendId, candidate: event.candidate });
+                    }
+                };
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                socket.emit('call-offer', { from: myUserId, to: currentFriendId, sdp: offer });
+                showCallingUI();
+            } catch (err) {
+                console.error('Erreur démarrage appel:', err);
+                alert('Impossible d\'accéder au micro');
+            }
+        }
+
+        function showCallingUI() {
+            // simple indicator
+            const status = document.getElementById('record-status');
+            if (status) { status.style.display = 'block'; status.textContent = 'Appel en cours...'; }
+        }
+
+        function hideCallingUI() {
+            const status = document.getElementById('record-status');
+            if (status) { status.style.display = 'none'; status.textContent = ''; }
+        }
+
+        // Affiche l'aperçu de l'image sélectionnée
+        const imageUpload = document.getElementById('imageUpload');
+    const recordBtn = document.getElementById('record-btn');
+    const recordStatus = document.getElementById('record-status');
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isRecording = false;
+        const previewWrapper = document.getElementById('image-preview');
+        const previewImg = document.getElementById('preview-img');
+        const previewInfo = document.getElementById('preview-info');
+        const clearPreviewBtn = document.getElementById('clear-preview');
+
+        imageUpload.onchange = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                previewImg.src = url;
+                previewInfo.textContent = file.name;
+                previewWrapper.style.display = 'flex';
+            } else {
+                previewWrapper.style.display = 'none';
+                previewImg.src = '';
+                previewInfo.textContent = '';
+            }
+        };
+
+        // Recording logic
+        async function startRecording() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Votre navigateur ne supporte pas l\'enregistrement audio.');
+                return;
+            }
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                recordedChunks = [];
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = function(e) {
+                    if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+                };
+                mediaRecorder.onstop = function() {
+                    isRecording = false;
+                    recordStatus.style.display = 'none';
+                    // Stop all tracks
+                    stream.getTracks().forEach(t => t.stop());
+                    // Automatically send audio
+                    sendRecordedAudio();
+                };
+                mediaRecorder.start();
+                isRecording = true;
+                recordStatus.style.display = 'block';
+                recordStatus.textContent = 'Enregistrement... cliquez pour arrêter';
+            } catch (err) {
+                console.error('Erreur d\'accès au micro:', err);
+                alert('Impossible d\'accéder au micro');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+            }
+        }
+
+        recordBtn.addEventListener('click', function() {
+            if (!isRecording) startRecording(); else stopRecording();
+        });
+
+        async function sendRecordedAudio() {
+            if (!recordedChunks.length || !currentFriendId) return;
+            const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+            const filename = Date.now() + '.webm';
+            const file = new File([blob], filename, { type: 'audio/webm' });
+
+            try {
+                const formData = new FormData();
+                formData.append('sender_id', myUserId);
+                formData.append('receiver_id', currentFriendId);
+                formData.append('image', file); // server accepte le champ 'image' pour le fichier
+
+                recordStatus.textContent = 'Envoi du message vocal...';
+
+                const resp = await fetch('/api/messages/send', { method: 'POST', body: formData });
+                const json = await resp.json();
+                if (json.success) {
+                    // afficher message vocal localement
+                    afficherMessage('Moi', { message: '', audioUrl: json.message.audioUrl }, true, json.message.id);
+                    // server will emit 'new_message' after saving; no client emit to avoid duplicates
+                    // reset recorded chunks
+                    recordedChunks = [];
+                    recordStatus.style.display = 'none';
+                } else {
+                    alert('Erreur lors de l\'envoi du message vocal');
+                }
+            } catch (err) {
+                console.error('Erreur en envoyant audio:', err);
+                alert('Erreur lors de l\'envoi du message vocal');
+            }
+        }
+
+        clearPreviewBtn.addEventListener('click', function() {
+            imageUpload.value = '';
+            previewWrapper.style.display = 'none';
+            previewImg.src = '';
+            previewInfo.textContent = '';
+        });
+
+        // Envoie un message texte et/ou une image
+        document.getElementById('chat-form').onsubmit = async function(e) {
             e.preventDefault();
             const input = document.getElementById('chat-input');
             const message = input.value.trim();
-            if (!message || !currentFriendId) return;
-            socket.emit('chat message', { from: myUserId, to: currentFriendId, message });
-            afficherMessage("Moi", message, true);
-            input.value = '';
+            const imageInput = document.getElementById('imageUpload');
+            const image = imageInput.files[0];
+            
+            if ((!message && !image) || !currentFriendId) {
+                alert('Veuillez saisir un message ou sélectionner une image, et choisir un destinataire.');
+                return;
+            }
+            
+            try {
+                const formData = new FormData();
+                if (message) {
+                    formData.append('content', message);
+                }
+                formData.append('sender_id', myUserId);
+                formData.append('receiver_id', currentFriendId);
+                if (image) {
+                    formData.append('image', image);
+                }
+
+                console.log('Envoi du message à:', currentFriendId);
+                    
+                const response = await fetch('/api/messages/send', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Erreur lors de l\'envoi du message');
+                }
+
+                const result = await response.json();
+                
+                    if (result.success) {
+                    // Afficher le message envoyé
+                    afficherMessage('Moi', {
+                        message: result.message.message,
+                        imageUrl: result.message.imageUrl
+                    }, true, result.message.id);
+                    
+                    // Vider les champs
+                    input.value = '';
+                    imageInput.value = '';
+                    // Clear preview UI
+                    if (previewWrapper) {
+                        previewWrapper.style.display = 'none';
+                        previewImg.src = '';
+                        previewInfo.textContent = '';
+                    }
+                    
+                    // Scroll vers le bas
+                    const messagesContainer = document.getElementById('chat-messages');
+                    if (messagesContainer) {
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                    
+                    // server will emit 'new_message' after saving; no client emit to avoid duplicates
+                } else {
+                    throw new Error('Échec de l\'envoi du message');
+                }
+            } catch (error) {
+                console.error('Erreur lors de l\'envoi du message:', error);
+                alert('Erreur lors de l\'envoi du message: ' + error.message);
+            }
         };
 
-        // Affiche un message dans la fenêtre de chat
-        function afficherMessage(from, message, isMe) {
+    // Affiche un message dans la fenêtre de chat
+    function afficherMessage(from, messageData, isMe, messageId) {
+            // Retirer le message vide s'il existe
+            const emptyMsg = document.querySelector('.empty-chat');
+            if (emptyMsg) {
+                emptyMsg.remove();
+            }
+            
             const div = document.createElement('div');
             div.className = isMe ? 'msg-me' : 'msg-other';
-            div.textContent = message; // On affiche seulement le message, sans le nom
+            
+            if (typeof messageData === 'object') {
+                // Message avec potentiellement une image
+                const hasText = messageData.message && messageData.message.trim() !== '';
+                const hasImage = !!messageData.imageUrl;
+
+                if (hasText) {
+                    const textP = document.createElement('p');
+                    textP.textContent = messageData.message;
+                    div.appendChild(textP);
+                }
+                if (hasImage) {
+                    const img = document.createElement('img');
+                    img.src = messageData.imageUrl;
+                    img.className = 'message-image';
+                    img.onclick = function() {
+                        window.open(img.src, '_blank');
+                    };
+                    div.appendChild(img);
+                }
+                if (messageData.audioUrl) {
+                    const audio = document.createElement('audio');
+                    audio.controls = true;
+                    audio.src = messageData.audioUrl;
+                    audio.style.display = 'block';
+                    audio.style.marginTop = '8px';
+                    div.appendChild(audio);
+                }
+
+                // Si seulement une image (pas de texte), appliquer la classe img-only
+                if (hasImage && !hasText) {
+                    div.classList.add('img-only');
+                }
+
+                // Si le message appartient à l'utilisateur courant, ajouter un petit label 'Modifier' au-dessus à droite
+                if (isMe) {
+                    const editLabel = document.createElement('span');
+                    editLabel.className = 'edit-label edit-me';
+                    editLabel.textContent = 'Modifier';
+                    editLabel.onclick = function(e) {
+                        e.stopPropagation();
+                        openEditUI(div, messageData, messageId);
+                    };
+                    // Préfixer pour le placer en haut (position absolute fonctionne car div est position:relative)
+                    div.appendChild(editLabel);
+                } else if (!isMe) {
+                    // Optionnel: style pour les messages des autres si besoin
+                    // const editLabelOther = document.createElement('span');
+                    // editLabelOther.className = 'edit-label edit-other';
+                    // editLabelOther.textContent = '';
+                    // div.appendChild(editLabelOther);
+                }
+            } else {
+                // Message texte simple
+                const textP = document.createElement('p');
+                textP.textContent = messageData;
+                div.appendChild(textP);
+            }
+            
+            // Store message id as data attribute to find later
+            if (messageId) div.dataset.messageId = messageId;
             document.getElementById('chat-messages').appendChild(div);
             document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
         }
+
+        // Typing indicator handling
+        const chatInput = document.getElementById('chat-input');
+        let typingTimer = null;
+        let isTyping = false;
+
+        if (chatInput) {
+            chatInput.addEventListener('input', () => {
+                if (!currentFriendId) return; // no recipient selected
+                if (!isTyping) {
+                    isTyping = true;
+                    socket.emit('typing', { from: myUserId, to: currentFriendId });
+                }
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(() => {
+                    isTyping = false;
+                    socket.emit('stop typing', { from: myUserId, to: currentFriendId });
+                }, 1500); // 1.5s after last keystroke
+            });
+
+            // also send stop typing when input loses focus or message sent
+            chatInput.addEventListener('blur', () => {
+                if (isTyping) {
+                    isTyping = false;
+                    socket.emit('stop typing', { from: myUserId, to: currentFriendId });
+                }
+            });
+        }
+
+        // Show typing indicator as three animated dots inside chat when friend types
+        function ensureTypingIndicator() {
+            const chatMessages = document.getElementById('chat-messages');
+            if (!chatMessages) return null;
+            // If already present, return it
+            const existing = chatMessages.querySelector('.typing-indicator');
+            if (existing) return existing;
+            // create indicator container
+            const wrapper = document.createElement('div');
+            wrapper.className = 'typing-indicator';
+            const dots = document.createElement('div');
+            dots.className = 'dots';
+            for (let i = 0; i < 3; i++) {
+                const d = document.createElement('div');
+                d.className = 'dot';
+                dots.appendChild(d);
+            }
+            wrapper.appendChild(dots);
+            chatMessages.appendChild(wrapper);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return wrapper;
+        }
+
+        function removeTypingIndicator() {
+            const chatMessages = document.getElementById('chat-messages');
+            if (!chatMessages) return;
+            const existing = chatMessages.querySelector('.typing-indicator');
+            if (existing) existing.remove();
+        }
+
+        socket.on('typing', (data) => {
+            if (!data || String(data.from) !== String(currentFriendId)) return;
+            ensureTypingIndicator();
+        });
+
+        socket.on('stop typing', (data) => {
+            if (!data || String(data.from) !== String(currentFriendId)) return;
+            removeTypingIndicator();
+        });
+
+        // Ouvre l'UI d'édition inline pour un message
+        function openEditUI(messageDiv, messageData, messageId) {
+            // éviter plusieurs UI d'édition
+            if (messageDiv.querySelector('.edit-area')) return;
+
+            const editArea = document.createElement('div');
+            editArea.className = 'edit-area';
+            editArea.style.display = 'flex';
+            editArea.style.gap = '8px';
+            editArea.style.marginTop = '8px';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = messageData.message || '';
+            input.style.flex = '1';
+            input.style.padding = '8px 10px';
+            input.style.borderRadius = '8px';
+
+            const saveBtn = document.createElement('button');
+            saveBtn.textContent = 'Enregistrer';
+            saveBtn.style.padding = '8px 12px';
+            saveBtn.onclick = async function() {
+                const newText = input.value.trim();
+                try {
+                    const formData = new FormData();
+                    formData.append('content', newText);
+                    formData.append('sender_id', myUserId);
+
+                    const resp = await fetch('/api/messages/' + messageId, {
+                        method: 'PUT',
+                        body: formData
+                    });
+
+                    if (!resp.ok) throw new Error('Erreur lors de la modification');
+                    const resJson = await resp.json();
+                    if (resJson.success) {
+                        // Mettre à jour l'affichage local
+                        // remplacer le texte dans le div
+                        const p = messageDiv.querySelector('p');
+                        if (p) p.textContent = resJson.message.message;
+                        // supprimer UI d'édition
+                        editArea.remove();
+                    } else {
+                        alert('Échec de la modification');
+                    }
+                } catch (err) {
+                    console.error('Erreur update:', err);
+                    alert('Erreur lors de la modification: ' + err.message);
+                }
+            };
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Annuler';
+            cancelBtn.style.padding = '8px 12px';
+            cancelBtn.onclick = function() { editArea.remove(); };
+
+            editArea.appendChild(input);
+            editArea.appendChild(saveBtn);
+            editArea.appendChild(cancelBtn);
+
+            messageDiv.appendChild(editArea);
+            input.focus();
+        }
+        
         // Réception d'un message
         socket.on('chat message', (data) => {
             // Affiche seulement si la conversation est ouverte avec ce contact
+            // remove typing indicator when a real message arrives
+            removeTypingIndicator();
             if (data.from === currentFriendId) {
-                afficherMessage(currentFriendName, data.message, false);
+                // Determine message id: prefer embedded id, otherwise savedId
+                let mid = undefined;
+                if (data && data.message && typeof data.message === 'object' && data.message.id) {
+                    mid = data.message.id;
+                } else if (data && data.savedId) {
+                    mid = data.savedId;
+                }
+
+                if (typeof data.message === 'object') {
+                    // Message avec potentiellement une image
+                    afficherMessage(currentFriendName, data.message, false, mid);
+                } else {
+                    // Message texte simple
+                    afficherMessage(currentFriendName, data.message, false, mid);
+                }
             }
+        });
+
+        // Réception d'une mise à jour de message
+        socket.on('message updated', (payload) => {
+            const updated = payload.message;
+            // Si la mise à jour concerne la conversation ouverte, on met à jour le DOM
+            if (!updated) return;
+            // Le message a des champs from/to
+            const messagesContainer = document.getElementById('chat-messages');
+            const domMessages = Array.from(messagesContainer.children);
+            for (const el of domMessages) {
+                const mid = el.dataset && el.dataset.messageId;
+                if (mid && parseInt(mid) === parseInt(updated.id)) {
+                    // Mettre à jour le texte et l'image si nécessaire
+                    const p = el.querySelector('p');
+                    if (p) p.textContent = updated.message;
+                    const img = el.querySelector('img.message-image');
+                    if (img) {
+                        if (updated.imageUrl) img.src = updated.imageUrl;
+                        else img.remove();
+                    } else if (updated.imageUrl) {
+                        const newImg = document.createElement('img');
+                        newImg.className = 'message-image';
+                        newImg.src = updated.imageUrl;
+                        newImg.onclick = () => window.open(newImg.src, '_blank');
+                        el.appendChild(newImg);
+                    }
+                }
+            }
+        });
+
+        // Incoming call
+        socket.on('incoming-call', async (data) => {
+            if (!data || !data.from) return;
+            const accept = confirm('Appel entrant de l\'utilisateur ' + data.from + '. Accepter ?');
+            if (!accept) {
+                socket.emit('call-end', { from: myUserId, to: data.from });
+                return;
+            }
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                pc = new RTCPeerConnection(peerConfig);
+                localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+                remoteStream = new MediaStream();
+                pc.ontrack = (ev) => { ev.streams[0].getTracks().forEach(t => remoteStream.addTrack(t)); };
+                pc.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        socket.emit('call-candidate', { from: myUserId, to: data.from, candidate: event.candidate });
+                    }
+                };
+                // Set remote offer
+                await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                socket.emit('call-answer', { from: myUserId, to: data.from, sdp: answer });
+                showCallingUI();
+            } catch (err) {
+                console.error('Erreur en acceptant l\'appel:', err);
+            }
+        });
+
+        socket.on('call-answered', async (data) => {
+            if (!pc || !data || !data.sdp) return;
+            try {
+                await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+                // call established
+                showCallingUI();
+            } catch (err) { console.error('Erreur en traitant answer:', err); }
+        });
+
+        socket.on('call-candidate', async (data) => {
+            if (!pc || !data || !data.candidate) return;
+            try {
+                await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+            } catch (err) { console.error('Erreur ajout candidat:', err); }
+        });
+
+        socket.on('call-ended', (data) => {
+            // close peer
+            if (pc) { try { pc.close(); } catch (e) {} pc = null; }
+            if (localStream) { localStream.getTracks().forEach(t=>t.stop()); localStream = null; }
+            hideCallingUI();
+            alert('Appel terminé');
+        });
+
+        // Server-sent real-time message/notification
+        socket.on('new_message', (payload) => {
+            try {
+                // remove typing indicator as a real message has arrived
+                removeTypingIndicator();
+                const msg = payload.message;
+                // Show desktop notification if the conversation isn't active or page is different
+                if (Notification && Notification.permission === 'granted') {
+                    const title = 'Nouveau message';
+                    const body = msg.message ? msg.message.slice(0, 80) : (msg.audioUrl ? 'Message vocal' : 'Image');
+                    const notif = new Notification(title, { body });
+                    notif.onclick = () => window.focus();
+                }
+
+                // If current conversation is open and matches, render it
+                if (String(currentFriendId) === String(msg.from) || String(currentFriendId) === String(msg.to)) {
+                    // render depending on who sent it
+                    const isMe = String(msg.from) === String(myUserId);
+                    afficherMessage(isMe ? 'Moi' : currentFriendName, { message: msg.message, imageUrl: msg.imageUrl, audioUrl: msg.audioUrl }, isMe, msg.id);
+                } else {
+                    // Optionally increment badge or show small popup in UI
+                    console.log('Nouveau message reçu hors conversation active:', msg);
+                }
+            } catch (e) { console.error('Erreur new_message handler', e); }
         });
 
         // Affichage initial
         document.getElementById('chat-form').style.display = 'none';
-        document.getElementById('chat-user-header').textContent = "Sélectionnez un ami pour démarrer la conversation";
+        document.getElementById('chat-header-name').textContent = "Sélectionnez un ami pour démarrer";
+        document.getElementById('chat-header-status').style.display = 'none';
         document.getElementById('chat-messages').innerHTML = '<div class="empty-chat" id="empty-chat-msg">Sélectionnez un ami pour démarrer la conversation</div>';
     </script>
 </body>
