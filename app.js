@@ -76,10 +76,17 @@ initDB();
 // ... (ton code habituel)
 
 io.on("connection", (socket) => {
+  console.log(
+    "New socket connection:",
+    socket.id,
+    "from",
+    socket.handshake.address
+  );
   // Presence tracking: maintain a map of userId -> set of socket ids
   if (!global.onlineUsers) global.onlineUsers = new Map();
 
   socket.on("join", (userId) => {
+    console.log("Socket", socket.id, "joining room", userId);
     socket.join(userId);
     try {
       const id = String(userId);

@@ -112,7 +112,17 @@ module.exports = (app, io) => {
 
       // Emit to receiver(s)
       if (io && receiver) {
-        io.to(String(receiver)).emit("new_message", { message: saved });
+        try {
+          console.log(
+            "Emitting new_message to room",
+            String(receiver),
+            "messageId",
+            saved.id
+          );
+          io.to(String(receiver)).emit("new_message", { message: saved });
+        } catch (e) {
+          console.error("Error emitting new_message", e);
+        }
       }
 
       return res.json({ success: true, message: saved });
